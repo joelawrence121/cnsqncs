@@ -108,6 +108,7 @@ const Consequences: React.FC = () => {
                 if (responseData.waiting_for) {
                     let newWaitingFor = responseData.waiting_for.slice()
                     setWaitingFor(newWaitingFor)
+                    setEntry(() => "")
                 }
             })
             .catch(e => {
@@ -181,7 +182,7 @@ const Consequences: React.FC = () => {
             case GameState.IN_PROGRESS:
                 return <div className="form-group custom input">
                     <label className="label title">{storyState}</label>
-                    <input type="text" className="form-control separated" onChange={updateEntry}/>
+                    <input type="text" className="form-control separated" value={entry} onChange={updateEntry}/>
                     {waitingFor.includes(playerName) ?
                         <button className="btn btn-primary separated" onClick={handleSubmit}>Submit</button>
                         : <label className="label info">Submitted</label>
