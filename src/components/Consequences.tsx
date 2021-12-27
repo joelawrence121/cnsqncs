@@ -61,7 +61,10 @@ const Consequences: React.FC = () => {
                     .then(response => {
                         console.log(response)
                         let responseData = response.data as unknown as Response
-                        if (responseData.game_id) setGameCode(responseData.game_id)
+                        if (responseData.game_id && responseData.player_name) {
+                            setGameCode(responseData.game_id)
+                            setPlayerName(responseData.player_name)
+                        }
                     })
                     .catch(e => {
                         console.log(e)
@@ -72,7 +75,10 @@ const Consequences: React.FC = () => {
                     .then(response => {
                         console.log(response)
                         let responseData = response.data as unknown as Response
-                        if (responseData.game_id) setGameCode(responseData.game_id)
+                        if (responseData.game_id && responseData.player_name) {
+                            setGameCode(responseData.game_id)
+                            setPlayerName(responseData.player_name)
+                        }
                     })
                     .catch(e => {
                         setGameCode("Unable to join.")
@@ -142,7 +148,7 @@ const Consequences: React.FC = () => {
             }
         }, POLL_INTERVAL);
         return () => clearInterval(interval);
-    }, [gameState, gameCode]);
+    }, [gameState, gameCode, playerName]);
 
     function getComponent(state: GameState) {
         switch (state) {

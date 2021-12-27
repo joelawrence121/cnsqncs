@@ -21,5 +21,6 @@ export default interface Response {
     story_state: string | undefined,
     waiting_for: string[] | undefined,
     players: string[] | undefined,
-    story: Story[] | undefined
+    story: Story[] | undefined,
+    player_name: string | undefined
 }
