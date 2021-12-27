@@ -19,10 +19,20 @@ const pollGame = (request: Request) => {
     return http.post("/poll", request, headers)
 }
 
+const startGame = (request: Request) => {
+    return http.post("/start", request, headers)
+}
+
+const postEntry = (request: Request) => {
+    return http.post("/post_entry", request, headers)
+}
+
 const ConsequencesService = {
     createGame,
     joinGame,
-    pollGame
+    pollGame,
+    startGame,
+    postEntry
 }
 
 export default ConsequencesService;

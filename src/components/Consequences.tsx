@@ -3,27 +3,28 @@ import ConsequencesService from "../ConsequencesService";
 import Response from "../types/Response";
 
 const enum GameState {
-    HOME, JOIN, LOBBY_CREATED, LOBBY_JOINED, IN_PROGRESS
+    HOME, JOIN, LOBBY_CREATED, LOBBY_JOINED, READY_TO_START, IN_PROGRESS, STORY_WAIT, STORY_DISPLAY
 }
 
 const Consequences: React.FC = () => {
 
     const POLL_INTERVAL = 500
-    const POLL_GAME_STATES = [GameState.LOBBY_CREATED, GameState.LOBBY_JOINED]
+    const POLL_GAME_STATES = [GameState.LOBBY_CREATED, GameState.LOBBY_JOINED, GameState.IN_PROGRESS]
     const [gameState, setGameState] = useState<GameState>(GameState.HOME)
     const [playerName, setPlayerName] = useState('')
+    const [entry, setEntry] = useState('')
+    const [entrySubmit, setEntrySubmit] = useState(false)
     const [players, setPlayers] = useState<string[]>([])
-    const [creator, setCreator] = useState<boolean>(false)
+    const [waitingFor, setWaitingFor] = useState<string[]>([])
+    const [storyState, setStoryState] = useState<string>('')
     const [gameCode, setGameCode] = useState('')
 
     function handleCreate() {
-        setCreator(true)
         setGameState(GameState.LOBBY_CREATED)
     }
 
     function handleJoin() {
         if (gameState == GameState.HOME) {
-            setCreator(false)
             setGameState(GameState.JOIN)
         } else {
             setGameState(GameState.LOBBY_JOINED)
@@ -31,7 +32,11 @@ const Consequences: React.FC = () => {
     }
 
     function handleStart() {
-        setGameState(GameState.IN_PROGRESS)
+        setGameState(GameState.READY_TO_START)
+    }
+
+    function handleSubmit() {
+        setEntrySubmit(!entrySubmit)
     }
 
     const updatePlayerName = (e: React.ChangeEvent<HTMLInputElement>): void => {
@@ -42,7 +47,11 @@ const Consequences: React.FC = () => {
         setGameCode(e.target.value)
     }
 
-    // page display hook
+    const updateEntry = (e: React.ChangeEvent<HTMLInputElement>): void => {
+        setEntry(e.target.value)
+    }
+
+    // page data hook
     useEffect(() => {
         switch (gameState) {
             case GameState.LOBBY_CREATED:
@@ -67,15 +76,42 @@ const Consequences: React.FC = () => {
                         setGameCode("Unable to join.")
                         console.log(e)
                     })
+                break
+            case GameState.READY_TO_START:
+                ConsequencesService.startGame({name: playerName, game_id: gameCode, entry: undefined})
+                    .then(response => {
+                        console.log(response)
+                        let responseData = response.data as unknown as Response
+                        if (responseData.game_state) setGameState(GameState.IN_PROGRESS)
+                    })
+                    .catch(e => {
+                        console.log(e)
+                    })
+                break
         }
     }, [gameState])
+
+    // submit hook
+    useEffect(() => {
+        ConsequencesService.postEntry({name: playerName, game_id: gameCode, entry: entry})
+            .then(response => {
+                console.log(response)
+                let responseData = response.data as unknown as Response
+                if (responseData.waiting_for) {
+                    let newWaitingFor = responseData.waiting_for.slice()
+                    setWaitingFor(newWaitingFor)
+                }
+            })
+            .catch(e => {
+                console.log(e)
+            })
+    }, [entrySubmit])
 
     // polling hook
     useEffect(() => {
         const interval = setInterval(() => {
             if (POLL_GAME_STATES.includes(gameState)) {
                 console.log("Polling " + playerName + " " + gameCode)
-                console.log(playerName)
                 ConsequencesService.pollGame({name: playerName, game_id: gameCode, entry: undefined})
                     .then(response => {
                         console.log(response)
@@ -83,6 +119,14 @@ const Consequences: React.FC = () => {
                         if (responseData.players) {
                             let newPlayers = responseData.players.slice()
                             setPlayers(newPlayers)
+                        }
+                        if (gameState == GameState.LOBBY_JOINED && responseData.story) {
+                            if (responseData.story.length > 0) setGameState(GameState.IN_PROGRESS)
+                        }
+                        if (gameState == GameState.IN_PROGRESS && responseData.waiting_for && responseData.story_state) {
+                            let waitingFor = responseData.waiting_for.slice()
+                            setWaitingFor(waitingFor)
+                            setStoryState(responseData.story_state)
                         }
                     })
                     .catch(e => {
@@ -121,6 +165,13 @@ const Consequences: React.FC = () => {
                     <label className="label other">{gameCode}</label>
                     <label className="label other">Waiting</label><br/>
                     {players.map((player: string) => <label className="label success">{player}</label>)}
+                </div>
+            case GameState.IN_PROGRESS:
+                return <div className="form-group custom">
+                    <input type="text" className="form-control separated" placeholder={storyState}
+                           value={entry} onChange={updateEntry}/>
+                    <button className="btn btn-primary separated" onClick={handleSubmit}>Submit</button>
+                    {waitingFor.map((player: string) => <label className="label warning">{player}</label>)}
                 </div>
         }
     }
