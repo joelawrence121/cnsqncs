@@ -44,7 +44,7 @@ async def join_game(request: JoinRequest):
         logger.warning(e)
 
 
-@app.get("/poll")
+@app.post("/poll")
 async def poll_game(request: PollRequest):
     try:
         return consequences_service.poll_game(request.name, request.game_id)
@@ -52,10 +52,10 @@ async def poll_game(request: PollRequest):
         logger.warning(e)
 
 
-@app.get("/start_game/{game_id}")
-async def start_game(game_id):
+@app.post("/start")
+async def start_game(request: PollRequest):
     try:
-        return consequences_service.start_game(game_id)
+        return consequences_service.start_game(request.game_id)
     except RuntimeError as e:
         logger.warning(e)
 
