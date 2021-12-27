@@ -1,0 +1,40 @@
+.App {
+    text-align: center;
+    font-family: 'Noto Sans', sans-serif;
+}
+
+/* Main Layout */
+
+.section.inner {
+    min-height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background-color: transparent;
+}
+
+.label {
+    align-self: center;
+    color: white;
+    padding: 8px;
+    width: 30%;
+}
+
+.success {background-color: #04AA6D;}
+.info {background-color: #2196F3;}
+.warning {background-color: #ff9800;}
+.danger {background-color: #f44336;}
+.other {background-color: #e7e7e7; color: black;}
+
+.custom {
+    display: flex;
+    flex-direction: column;
+    background: transparent;
+    width: 50%;
+}
+
+.separated {
+    align-self: center;
+    width: 30%;
+    margin: 5px;
+}
