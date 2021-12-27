@@ -182,9 +182,11 @@ const Consequences: React.FC = () => {
             case GameState.IN_PROGRESS:
                 return <div className="form-group custom input">
                     <label className="label title">{storyState}</label>
-                    <input type="text" className="form-control separated" value={entry} onChange={updateEntry}/>
                     {waitingFor.includes(playerName) ?
-                        <button className="btn btn-primary separated" onClick={handleSubmit}>Submit</button>
+                        <>
+                            <input type="text" className="form-control separated" value={entry} onChange={updateEntry}/>
+                            <button className="btn btn-primary separated" onClick={handleSubmit}>Submit</button>
+                        </>
                         : <label className="label info">Submitted</label>
                     }
                     <br/>

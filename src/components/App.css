@@ -71,32 +71,19 @@
     margin: 5px;
 }
 
-
 .Collapsible {
+    font-style: italic;
+    user-select: none;
     text-align: left;
-    list-style: none;
     margin-bottom: 5px;
     max-height: 100%;
-    font-size: x-large;
-    font-weight: bold;
     animation: cardEntrance 700ms ease-out;
     animation-fill-mode: backwards;
 }
 
 .Collapsible__contentInner {
     padding: 10px;
-    border: 1px solid #eceaea;
-    border-top: 0;
-}
-
-.Collapsible__contentInner.p {
-    margin-bottom: 10px;
-    font-size: 14px;
-    line-height: 20px;
-}
-
-.Collapsible__contentInner.p:last-child {
-    margin-bottom: 0;
+    font-style: normal;
 }
 
 .Collapsible__trigger {
@@ -106,7 +93,6 @@
     position: relative;
     padding: 10px;
     border: 1px ridge white;
-    animation-delay: calc(6 * var(--stagger-delay));
 }
 
 .Collapsible__trigger:after {
@@ -123,11 +109,9 @@
 }
 
 .Collapsible:nth-child(odd) {
-    color: #262626;
     background: rgba(255, 255, 255, 0.96);
 }
 
 .Collapsible:nth-child(even) {
-    color: #262626;
     background: rgba(255, 255, 255, 0.96);
 }
