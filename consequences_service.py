@@ -21,17 +21,22 @@ class ConsequencesService:
 
         game = Game(player_name)
         self.games[game.id] = game
-        return self.__get_response_obj(game)
+        response_ob = self.__get_response_obj(game)
+        response_ob['player_name'] = player_name
+        return response_ob
 
     def join_game(self, game_id, player_name):
         if game_id not in self.games.keys():
             return {'message': 'game_id: ' + game_id + ' does not exist.'}
-
+        if player_name in self.games[game_id].players:
+            return {'message': player_name + ' already taken.'}
         if len(player_name) < 1:
             player_name = "Player " + str((len(self.games[game_id].players)) + 1)
 
         self.games[game_id].player_join(player_name)
-        return self.__get_response_obj(self.games[game_id])
+        response_ob = self.__get_response_obj(self.games[game_id])
+        response_ob['player_name'] = player_name
+        return response_ob
 
     def poll_game(self, player_name, game_id):
         if game_id not in self.games.keys():
