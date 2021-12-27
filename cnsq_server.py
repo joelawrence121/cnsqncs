@@ -31,7 +31,7 @@ logger = logging.getLogger('cnsq_server')
 @app.post("/create")
 async def create_game(request: CreateRequest):
     try:
-        return consequences_service.create_game(request.name)
+        return consequences_service.create_game(request.name, request.avatar)
     except RuntimeError as e:
         logger.warning(e)
 
@@ -39,7 +39,7 @@ async def create_game(request: CreateRequest):
 @app.post("/join")
 async def join_game(request: JoinRequest):
     try:
-        return consequences_service.join_game(request.game_id, request.name)
+        return consequences_service.join_game(request.game_id, request.name, request.avatar)
     except RuntimeError as e:
         logger.warning(e)
 

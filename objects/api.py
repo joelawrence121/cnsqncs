@@ -3,11 +3,13 @@ from pydantic import BaseModel
 
 class CreateRequest(BaseModel):
     name: str
+    avatar: str
 
 
 class JoinRequest(BaseModel):
     name: str
     game_id: str
+    avatar: str
 
 
 class PollRequest(BaseModel):

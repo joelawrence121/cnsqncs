@@ -3,9 +3,10 @@ from enum import Enum
 
 
 class Player:
-    def __init__(self, name: str, creator: bool):
+    def __init__(self, name: str, creator: bool, avatar: str):
         self.name = name
         self.creator = creator
+        self.avatar = avatar
 
 
 class StoryState(Enum):
@@ -59,21 +60,21 @@ class GameState(Enum):
 
 
 class Game:
-    def __init__(self, player_name):
+    def __init__(self, player_name, avatar):
         self.id = uuid.uuid4().__str__()[:3]
         self.game_state = GameState.NOT_STARTED
         self.story_state = StoryState.MAN
-        self.players = [Player(player_name, True)]
+        self.players = [Player(player_name, True, avatar)]
         self.stories = []
 
     def get_waiting_for(self):
         return set([story.current_player for story in self.stories if story.state != self.story_state])
 
     def get_players(self):
-        return [player.name for player in self.players]
+        return self.players
 
-    def player_join(self, player_name):
-        self.players.append(Player(player_name, False))
+    def player_join(self, player_name, avatar):
+        self.players.append(Player(player_name, False, avatar))
 
     def poll_game(self, player_name):
         waiting = [self.get_waiting_for()]
