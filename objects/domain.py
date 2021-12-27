@@ -22,8 +22,9 @@ class StoryState(Enum):
 
 
 class Entry:
-    def __init__(self, player: Player, entry: str):
+    def __init__(self, player: Player, state: str, entry: str):
         self.player = player
+        self.state = state
         self.entry = entry
 
 
@@ -43,12 +44,12 @@ class Story:
 
     def __init__(self, player):
         self.state = StoryState.NOT_STARTED
-        self.ENTRIES = dict.fromkeys(self.STATE_SEQUENCE)
+        self.entries = []
         self.current_player = player
 
     def post_entry(self, player: Player, entry: str):
         self.state = self.STATE_SEQUENCE[(self.STATE_SEQUENCE.index(self.state) + 1) % len(self.STATE_SEQUENCE)]
-        self.ENTRIES[self.state] = Entry(player, entry)
+        self.entries.append(Entry(player, self.state.value, entry))
 
 
 class GameState(Enum):
@@ -77,13 +78,12 @@ class Game:
     def poll_game(self, player_name):
         waiting = [self.get_waiting_for()]
 
-        # if round is done
+        # progress round if done
         if len(waiting[0]) == 0 and len(self.players) > 1 and self.game_state != GameState.NOT_STARTED:
             self.story_state = Story.STATE_SEQUENCE[
                 (Story.STATE_SEQUENCE.index(self.story_state) + 1) % len(Story.STATE_SEQUENCE)]
 
             players = [player.name for player in self.players]
-
             for i in range(0, len(players)):
                 self.stories[i].current_player = players[
                     (players.index(self.stories[i].current_player) + 1) % len(players)]
