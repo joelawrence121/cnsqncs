@@ -1,6 +1,18 @@
+interface Player {
+    name: string
+    creator: boolean
+}
+
+export interface Entry {
+    player: Player
+    state: string
+    entry: string
+}
 
 interface Story {
-
+    state: string | undefined
+    entries: Entry[] | undefined
+    current_player: string | undefined
 }
 
 export default interface Response {
@@ -9,5 +21,6 @@ export default interface Response {
     story_state: string | undefined,
     waiting_for: string[] | undefined,
     players: string[] | undefined,
-    story: Story[] | undefined
+    story: Story[] | undefined,
+    player_name: string | undefined
 }
