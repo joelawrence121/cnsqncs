@@ -1,9 +1,10 @@
 import React, {useEffect, useState} from 'react';
 import ConsequencesService from "../ConsequencesService";
-import Response from "../types/Response";
+import Response, {Entry} from "../types/Response";
+import Collapsible from "react-collapsible";
 
 const enum GameState {
-    HOME, JOIN, LOBBY_CREATED, LOBBY_JOINED, READY_TO_START, IN_PROGRESS, STORY_WAIT, STORY_DISPLAY
+    HOME, JOIN, LOBBY_CREATED, LOBBY_JOINED, READY_TO_START, IN_PROGRESS, STORY_DISPLAY
 }
 
 const Consequences: React.FC = () => {
@@ -18,6 +19,7 @@ const Consequences: React.FC = () => {
     const [waitingFor, setWaitingFor] = useState<string[]>([])
     const [storyState, setStoryState] = useState<string>('')
     const [gameCode, setGameCode] = useState('')
+    const [completeEntries, setCompleteEntries] = useState<Entry[]>([])
 
     function handleCreate() {
         setGameState(GameState.LOBBY_CREATED)
@@ -127,6 +129,10 @@ const Consequences: React.FC = () => {
                             let waitingFor = responseData.waiting_for.slice()
                             setWaitingFor(waitingFor)
                             setStoryState(responseData.story_state)
+                            if (responseData.story_state === '<finished>' && responseData.story && responseData.story.length > 0 && responseData.story[0].entries) {
+                                setGameState(GameState.STORY_DISPLAY)
+                                setCompleteEntries(responseData.story[0].entries)
+                            }
                         }
                     })
                     .catch(e => {
@@ -167,11 +173,23 @@ const Consequences: React.FC = () => {
                     {players.map((player: string) => <label className="label success">{player}</label>)}
                 </div>
             case GameState.IN_PROGRESS:
-                return <div className="form-group custom">
-                    <input type="text" className="form-control separated" placeholder={storyState}
-                           value={entry} onChange={updateEntry}/>
-                    <button className="btn btn-primary separated" onClick={handleSubmit}>Submit</button>
+                return <div className="form-group custom input">
+                    <label className="label title">{storyState}</label>
+                    <input type="text" className="form-control separated" onChange={updateEntry}/>
+                    {waitingFor.includes(playerName) ?
+                        <button className="btn btn-primary separated" onClick={handleSubmit}>Submit</button>
+                        : <label className="label info">Submitted</label>
+                    }
+                    <br/>
                     {waitingFor.map((player: string) => <label className="label warning">{player}</label>)}
+                </div>
+            case GameState.STORY_DISPLAY:
+                return <div className="form-group custom">
+                    {completeEntries.map((entry: Entry, index: number) =>
+                        <Collapsible key={index} easing={"ease-in"} trigger={entry.state}>
+                            {entry.entry}
+                        </Collapsible>
+                    )}
                 </div>
         }
     }

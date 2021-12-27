@@ -1,6 +1,7 @@
 .App {
     text-align: center;
     font-family: 'Noto Sans', sans-serif;
+    --stagger-delay: 100ms;
 }
 
 /* Main Layout */
@@ -13,28 +14,120 @@
     background-color: transparent;
 }
 
+.bold {
+    font-weight: bold;
+}
+
 .label {
     align-self: center;
     color: white;
     padding: 8px;
-    width: 30%;
+    width: 75%;
 }
 
-.success {background-color: #04AA6D;}
-.info {background-color: #2196F3;}
-.warning {background-color: #ff9800;}
-.danger {background-color: #f44336;}
-.other {background-color: #e7e7e7; color: black;}
+.success {
+    background-color: #04AA6D;
+}
+
+.info {
+    background-color: #2196F3;
+}
+
+.warning {
+    background-color: #ff9800;
+    opacity: 50%;
+}
+
+.danger {
+    background-color: #f44336;
+}
+
+.other {
+    background-color: #e7e7e7;
+    color: black;
+}
+
+.title {
+    background-color: transparent;
+    font-style: italic;
+    color: black;
+    user-select: none
+}
 
 .custom {
     display: flex;
     flex-direction: column;
     background: transparent;
-    width: 50%;
+    width: 75%;
+}
+
+.input {
+    width: 100%;
 }
 
 .separated {
     align-self: center;
-    width: 30%;
+    width: 75%;
     margin: 5px;
+}
+
+
+.Collapsible {
+    text-align: left;
+    list-style: none;
+    margin-bottom: 5px;
+    max-height: 100%;
+    font-size: x-large;
+    font-weight: bold;
+    animation: cardEntrance 700ms ease-out;
+    animation-fill-mode: backwards;
+}
+
+.Collapsible__contentInner {
+    padding: 10px;
+    border: 1px solid #eceaea;
+    border-top: 0;
+}
+
+.Collapsible__contentInner.p {
+    margin-bottom: 10px;
+    font-size: 14px;
+    line-height: 20px;
+}
+
+.Collapsible__contentInner.p:last-child {
+    margin-bottom: 0;
+}
+
+.Collapsible__trigger {
+    display: block;
+    font-weight: 400;
+    text-decoration: none;
+    position: relative;
+    padding: 10px;
+    border: 1px ridge white;
+    animation-delay: calc(6 * var(--stagger-delay));
+}
+
+.Collapsible__trigger:after {
+    content: '\25be';
+    position: absolute;
+    right: 10px;
+    top: 10px;
+    display: block;
+    transition: transform 300ms;
+}
+
+.Collapsible__trigger.is-open:after {
+    transform: rotateZ(180deg);
+}
+
+.Collapsible:nth-child(odd) {
+    color: #262626;
+    background: rgba(255, 255, 255, 0.96);
+}
+
+.Collapsible:nth-child(even) {
+    color: #262626;
+    background: rgba(255, 255, 255, 0.96);
 }
