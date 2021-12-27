@@ -78,7 +78,7 @@ class Game:
         waiting = [self.get_waiting_for()]
 
         # if round is done
-        if len(waiting[0]) == 0:
+        if len(waiting[0]) == 0 and len(self.players) > 1 and self.game_state != GameState.NOT_STARTED:
             self.story_state = Story.STATE_SEQUENCE[
                 (Story.STATE_SEQUENCE.index(self.story_state) + 1) % len(Story.STATE_SEQUENCE)]
 
