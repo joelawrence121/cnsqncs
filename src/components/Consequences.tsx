@@ -167,7 +167,13 @@ const Consequences: React.FC = () => {
         if (avatar === value.toUpperCase()) {
             return <img className="avatar selected" src={value} onClick={() => setAvatar(value.toUpperCase())}/>
         }
-        return <img className="avatar" src={value} onClick={() => setAvatar(value.toUpperCase())}/>
+        return <img className="avatar selectable" src={value} onClick={() => setAvatar(value.toUpperCase())}/>
+    }
+
+    function getPlayerImage(player: string) {
+        if (players.get(player)) {
+            return IMAGE_MAP.get(players.get(player) as string)
+        }
     }
 
     function getComponent(state: GameState) {
@@ -176,10 +182,10 @@ const Consequences: React.FC = () => {
                 return <div className="form-group custom">
                     <div className="avatars">
                         {images.slice(0, 6).map(value => getImage(value))}
-                    </div>
+                    </div><br/>
                     <div className="avatars">
                         {images.slice(6, 12).map(value => getImage(value))}
-                    </div>
+                    </div><br/>
                     <input type="text" className="form-control separated" placeholder="Name" value={playerName}
                            onChange={updatePlayerName}/>
                     <button className="btn btn-primary separated" onClick={handleCreate}>Create</button>
@@ -187,7 +193,7 @@ const Consequences: React.FC = () => {
                 </div>
             case GameState.JOIN:
                 return <div className="form-group custom">
-                    <img className="avatar" src={IMAGE_MAP.get(avatar)}/>
+                    <img className="avatar" src={IMAGE_MAP.get(avatar)}/><br/>
                     <input type="text" className="form-control separated" placeholder="Game code" value={gameCode}
                            onChange={updateGameCode}/>
                     <button className="btn btn-primary separated" onClick={handleJoin}>Join</button>
@@ -198,7 +204,7 @@ const Consequences: React.FC = () => {
                     personList.push(<label className="label success">{key}</label>)
                 })
                 return <div className="form-group custom">
-                    <img className="avatar" src={IMAGE_MAP.get(avatar)}/>
+                    <img className="avatar" src={IMAGE_MAP.get(avatar)}/><br/>
                     <label className="label other">{gameCode}</label>
                     <button className="btn btn-primary separated" onClick={handleStart}>Start</button>
                     <br/>
@@ -227,7 +233,13 @@ const Consequences: React.FC = () => {
                         : <label className="label info">Submitted</label>
                     }
                     <br/>
-                    {waitingFor.map((player: string) => <label className="label warning">{player}</label>)}
+                    {waitingFor.map((player: string) =>
+                        <div className="waiting-avatar">
+                            <label className="label warning">{player}</label>
+                            <img className="avatar waiting" src={getPlayerImage(player)}/>
+                            <br/>
+                        </div>
+                    )}
                 </div>
             case GameState.STORY_DISPLAY:
                 return <div className="form-group custom">

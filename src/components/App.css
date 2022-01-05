@@ -66,14 +66,29 @@ img.avatar {
     margin: auto;
     width: 15%;
     border-radius: 50%;
+    box-shadow: 0 0 5px 5px rgb(255, 255, 255);
 }
 
-img:hover {
-    box-shadow: 0 0 5px 5px rgba(0, 140, 186, 0.5);
+img.avatar.waiting {
+    width: 7%;
+    opacity: 60%;
+    background-image: url("../avatars/azy.png");
+}
+
+.waiting-avatar {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 100%;
+    overflow: hidden;
+}
+
+img.avatar.selectable:hover {
+    box-shadow: 0 0 5px 3px rgb(0, 0, 0);
 }
 
 img.avatar.selected {
-    box-shadow: 0 0 5px 5px rgb(96, 239, 218);
+    box-shadow: 0 0 5px 3px rgb(0, 0, 0);
 }
 
 .avatars {
