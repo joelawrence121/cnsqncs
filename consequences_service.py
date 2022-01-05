@@ -15,17 +15,17 @@ class ConsequencesService:
             'players': game.get_players()
         }
 
-    def create_game(self, player_name):
+    def create_game(self, player_name, avatar):
         if len(player_name) < 1:
             player_name = "Player 1"
 
-        game = Game(player_name)
+        game = Game(player_name, avatar)
         self.games[game.id] = game
         response_ob = self.__get_response_obj(game)
         response_ob['player_name'] = player_name
         return response_ob
 
-    def join_game(self, game_id, player_name):
+    def join_game(self, game_id, player_name, avatar):
         if game_id not in self.games.keys():
             return {'message': 'game_id: ' + game_id + ' does not exist.'}
         if player_name in self.games[game_id].players:
@@ -33,7 +33,7 @@ class ConsequencesService:
         if len(player_name) < 1:
             player_name = "Player " + str((len(self.games[game_id].players)) + 1)
 
-        self.games[game_id].player_join(player_name)
+        self.games[game_id].player_join(player_name, avatar)
         response_ob = self.__get_response_obj(self.games[game_id])
         response_ob['player_name'] = player_name
         return response_ob
