@@ -181,11 +181,17 @@ const Consequences: React.FC = () => {
             case GameState.HOME:
                 return <div className="form-group custom">
                     <div className="avatars">
-                        {images.slice(0, 6).map(value => getImage(value))}
-                    </div><br/>
+                        {images.slice(0, 4).map(value => getImage(value))}
+                    </div>
+                    <br/>
                     <div className="avatars">
-                        {images.slice(6, 12).map(value => getImage(value))}
-                    </div><br/>
+                        {images.slice(4, 8).map(value => getImage(value))}
+                    </div>
+                    <br/>
+                    <div className="avatars">
+                        {images.slice(8, 12).map(value => getImage(value))}
+                    </div>
+                    <br/>
                     <input type="text" className="form-control separated" placeholder="Name" value={playerName}
                            onChange={updatePlayerName}/>
                     <button className="btn btn-primary separated" onClick={handleCreate}>Create</button>
@@ -233,6 +239,7 @@ const Consequences: React.FC = () => {
                         : <label className="label info">Submitted</label>
                     }
                     <br/>
+                    <div className="waiting-div">
                     {waitingFor.map((player: string) =>
                         <div className="waiting-avatar">
                             <label className="label warning">{player}</label>
@@ -240,6 +247,7 @@ const Consequences: React.FC = () => {
                             <br/>
                         </div>
                     )}
+                    </div>
                 </div>
             case GameState.STORY_DISPLAY:
                 return <div className="form-group custom">

@@ -64,7 +64,7 @@
 
 img.avatar {
     margin: auto;
-    width: 15%;
+    width: 25%;
     border-radius: 50%;
     box-shadow: 0 0 5px 5px rgb(255, 255, 255);
 }
@@ -72,7 +72,10 @@ img.avatar {
 img.avatar.waiting {
     width: 7%;
     opacity: 60%;
-    background-image: url("../avatars/azy.png");
+}
+
+.waiting-div {
+    overflow: hidden;
 }
 
 .waiting-avatar {
