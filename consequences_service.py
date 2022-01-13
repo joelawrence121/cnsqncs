@@ -61,3 +61,13 @@ class ConsequencesService:
 
         self.games[request.game_id].post_entry(request.name, request.entry)
         return self.__get_response_obj(self.games[request.game_id])
+
+    def clear_games(self, confirm: bool):
+        if confirm:
+            return_obj = {"cleared": len(self.games)}
+        else:
+            return_obj = {"games": []}
+            for game_id in self.games:
+                if self.games[game_id].game_state != GameState.FINISHED:
+                    return_obj["games"].append(game_id)
+        return return_obj

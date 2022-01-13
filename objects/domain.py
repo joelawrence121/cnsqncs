@@ -81,9 +81,15 @@ class Game:
 
         # progress round if done
         if len(waiting[0]) == 0 and len(self.players) > 1 and self.game_state != GameState.NOT_STARTED:
+            # update story state
             self.story_state = Story.STATE_SEQUENCE[
                 (Story.STATE_SEQUENCE.index(self.story_state) + 1) % len(Story.STATE_SEQUENCE)]
 
+            # update game state to finished if story finished
+            if self.story_state == StoryState.FINISHED:
+                self.game_state = GameState.FINISHED
+
+            # swap stories between players TODO randomise
             players = [player.name for player in self.players]
             for i in range(0, len(players)):
                 self.stories[i].current_player = players[

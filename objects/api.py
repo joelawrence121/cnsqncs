@@ -21,3 +21,7 @@ class EntryRequest(BaseModel):
     name: str
     game_id: str
     entry: str
+
+
+class ClearRequest(BaseModel):
+    confirm: bool
