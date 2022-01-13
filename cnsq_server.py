@@ -31,7 +31,7 @@ logger = logging.getLogger('cnsq_server')
 @app.post("/create")
 async def create_game(request: CreateRequest):
     try:
-        return consequences_service.create_game(request.name, request.avatar)
+        return consequences_service.create_game(request.name, request.avatar, request.mode)
     except RuntimeError as e:
         logger.warning(e)
 

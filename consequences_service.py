@@ -15,11 +15,11 @@ class ConsequencesService:
             'players': game.get_players()
         }
 
-    def create_game(self, player_name, avatar):
+    def create_game(self, player_name, avatar, mode):
         if len(player_name) < 1:
             player_name = "Player 1"
 
-        game = Game(player_name, avatar)
+        game = Game(player_name, avatar, mode)
         self.games[game.id] = game
         response_ob = self.__get_response_obj(game)
         response_ob['player_name'] = player_name

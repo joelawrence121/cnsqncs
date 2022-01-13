@@ -1,25 +1,15 @@
 import uuid
 from enum import Enum
 
+import story_service
+from story_service import StoryState
+
 
 class Player:
     def __init__(self, name: str, creator: bool, avatar: str):
         self.name = name
         self.creator = creator
         self.avatar = avatar
-
-
-class StoryState(Enum):
-    NOT_STARTED = "<ready to start>"
-    MAN = "(man's name)"
-    WOMAN = "met (woman's name)"
-    MET = 'in / at'
-    HE_WORE = 'he wore'
-    SHE_WORE = 'she wore'
-    HE_SAID = 'he said'
-    SHE_SAID = 'she said'
-    CONSEQUENCE = 'and the consequence was'
-    FINISHED = "<finished>"
 
 
 class Entry:
@@ -30,26 +20,14 @@ class Entry:
 
 
 class Story:
-    STATE_SEQUENCE = [
-        StoryState.NOT_STARTED,
-        StoryState.MAN,
-        StoryState.WOMAN,
-        StoryState.MET,
-        StoryState.HE_WORE,
-        StoryState.SHE_WORE,
-        StoryState.HE_SAID,
-        StoryState.SHE_SAID,
-        StoryState.CONSEQUENCE,
-        StoryState.FINISHED
-    ]
-
-    def __init__(self, player):
+    def __init__(self, player, state_sequence):
         self.state = StoryState.NOT_STARTED
         self.entries = []
+        self.state_sequence = state_sequence
         self.current_player = player
 
     def post_entry(self, player: Player, entry: str):
-        self.state = self.STATE_SEQUENCE[(self.STATE_SEQUENCE.index(self.state) + 1) % len(self.STATE_SEQUENCE)]
+        self.state = self.state_sequence[(self.state_sequence.index(self.state) + 1) % len(self.state_sequence)]
         self.entries.append(Entry(player, self.state.value, entry))
 
 
@@ -60,10 +38,11 @@ class GameState(Enum):
 
 
 class Game:
-    def __init__(self, player_name, avatar):
+    def __init__(self, player_name, avatar, mode):
         self.id = uuid.uuid4().__str__()[:3]
         self.game_state = GameState.NOT_STARTED
-        self.story_state = StoryState.MAN
+        self.state_sequence = story_service.create_sequence(mode)
+        self.story_state = self.state_sequence[1]
         self.players = [Player(player_name, True, avatar)]
         self.stories = []
 
@@ -82,14 +61,14 @@ class Game:
         # progress round if done
         if len(waiting[0]) == 0 and len(self.players) > 1 and self.game_state != GameState.NOT_STARTED:
             # update story state
-            self.story_state = Story.STATE_SEQUENCE[
-                (Story.STATE_SEQUENCE.index(self.story_state) + 1) % len(Story.STATE_SEQUENCE)]
+            self.story_state = self.state_sequence[
+                (self.state_sequence.index(self.story_state) + 1) % len(self.state_sequence)]
 
             # update game state to finished if story finished
             if self.story_state == StoryState.FINISHED:
                 self.game_state = GameState.FINISHED
 
-            # swap stories between players TODO randomise
+            # swap stories between players
             players = [player.name for player in self.players]
             for i in range(0, len(players)):
                 self.stories[i].current_player = players[
@@ -100,7 +79,7 @@ class Game:
     def start(self):
         self.game_state = GameState.WAITING
         for i in range(0, len(self.players)):
-            self.stories.append(Story(self.players[i].name))
+            self.stories.append(Story(self.players[i].name, self.state_sequence))
 
     def post_entry(self, player_name, entry):
         story = [story for story in self.stories if story.current_player == player_name][0]

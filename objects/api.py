@@ -4,6 +4,7 @@ from pydantic import BaseModel
 class CreateRequest(BaseModel):
     name: str
     avatar: str
+    mode: str
 
 
 class JoinRequest(BaseModel):
