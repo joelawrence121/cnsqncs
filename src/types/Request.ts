@@ -4,3 +4,7 @@ export default interface Request {
     game_id: string | undefined,
     entry: string | undefined
 }
+
+export interface ClearRequest {
+    confirm: boolean
+}

@@ -1,4 +1,4 @@
-import Request from "./types/Request";
+import Request, {ClearRequest} from "./types/Request";
 import http from "./http-common";
 
 const headers = {
@@ -27,12 +27,18 @@ const postEntry = (request: Request) => {
     return http.post("/post_entry", request, headers)
 }
 
+const getActiveGames = (request: ClearRequest) => {
+    return http.post("/clear", request, headers)
+}
+
+
 const ConsequencesService = {
     createGame,
     joinGame,
     pollGame,
     startGame,
-    postEntry
+    postEntry,
+    getActiveGames
 }
 
 export default ConsequencesService;
