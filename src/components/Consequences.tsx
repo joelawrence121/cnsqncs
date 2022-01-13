@@ -3,9 +3,10 @@ import ConsequencesService from "../ConsequencesService";
 import Response, {Entry} from "../types/Response";
 import Collapsible from "react-collapsible";
 import images from "../avatars/images";
+import {GameMode} from "../types/Types";
 
 const enum GameState {
-    HOME, JOIN, LOBBY_CREATED, LOBBY_JOINED, READY_TO_START, IN_PROGRESS, STORY_DISPLAY
+    HOME, JOIN, CREATE_OPTIONS, LOBBY_CREATED, LOBBY_JOINED, READY_TO_START, IN_PROGRESS, STORY_DISPLAY
 }
 
 let IMAGE_MAP = new Map<string, any>();
@@ -25,8 +26,13 @@ const Consequences: React.FC = () => {
     const [gameCode, setGameCode] = useState('')
     const [completeEntries, setCompleteEntries] = useState<Entry[]>([])
     const [avatar, setAvatar] = useState<string>('')
+    const [gameMode, setGameMode] = useState<GameMode>(GameMode.CLASSIC)
 
-    function handleCreate() {
+    function handleCreateMenu() {
+        setGameState(GameState.CREATE_OPTIONS)
+    }
+
+    function handleCreateGame() {
         setGameState(GameState.LOBBY_CREATED)
     }
 
@@ -62,7 +68,13 @@ const Consequences: React.FC = () => {
     useEffect(() => {
         switch (gameState) {
             case GameState.LOBBY_CREATED:
-                ConsequencesService.createGame({name: playerName, avatar: avatar, game_id: undefined, entry: undefined})
+                ConsequencesService.createGame({
+                    name: playerName,
+                    avatar: avatar,
+                    mode: gameMode,
+                    game_id: undefined,
+                    entry: undefined
+                })
                     .then(response => {
                         console.log(response)
                         let responseData = response.data as unknown as Response
@@ -76,7 +88,13 @@ const Consequences: React.FC = () => {
                     })
                 break
             case GameState.LOBBY_JOINED:
-                ConsequencesService.joinGame({name: playerName, avatar: avatar, game_id: gameCode, entry: undefined})
+                ConsequencesService.joinGame({
+                    name: playerName,
+                    avatar: avatar,
+                    game_id: gameCode,
+                    entry: undefined,
+                    mode: undefined
+                })
                     .then(response => {
                         console.log(response)
                         let responseData = response.data as unknown as Response
@@ -95,7 +113,8 @@ const Consequences: React.FC = () => {
                     name: playerName,
                     game_id: gameCode,
                     avatar: undefined,
-                    entry: undefined
+                    entry: undefined,
+                    mode: undefined
                 })
                     .then(response => {
                         console.log(response)
@@ -111,7 +130,13 @@ const Consequences: React.FC = () => {
 
     // submit hook
     useEffect(() => {
-        ConsequencesService.postEntry({name: playerName, avatar: undefined, game_id: gameCode, entry: entry})
+        ConsequencesService.postEntry({
+            name: playerName,
+            avatar: undefined,
+            game_id: gameCode,
+            entry: entry,
+            mode: undefined
+        })
             .then(response => {
                 console.log(response)
                 let responseData = response.data as unknown as Response
@@ -131,7 +156,13 @@ const Consequences: React.FC = () => {
         const interval = setInterval(() => {
             if (POLL_GAME_STATES.includes(gameState)) {
                 console.log("Polling " + playerName + " " + gameCode)
-                ConsequencesService.pollGame({name: playerName, avatar: undefined, game_id: gameCode, entry: undefined})
+                ConsequencesService.pollGame({
+                    name: playerName,
+                    avatar: undefined,
+                    game_id: gameCode,
+                    entry: undefined,
+                    mode: undefined
+                })
                     .then(response => {
                         console.log(response)
                         let responseData = response.data as unknown as Response
@@ -194,8 +225,38 @@ const Consequences: React.FC = () => {
                     <br/>
                     <input type="text" className="form-control separated" placeholder="Name" value={playerName}
                            onChange={updatePlayerName}/>
-                    <button className="btn btn-primary separated" onClick={handleCreate}>Create</button>
+                    <button className="btn btn-primary separated" onClick={handleCreateMenu}>Create</button>
                     <button className="btn btn-primary separated" onClick={handleJoin}>Join</button>
+                </div>
+            case GameState.CREATE_OPTIONS:
+                return <div className="form-group custom">
+                    <img className="avatar" src={IMAGE_MAP.get(avatar)}/>
+                    <label className="label title">{playerName}</label><br/>
+                    <div className="row">
+                        <div className="col-sm-4">
+                            <div className="form-group">
+                                <button className="btn btn-primary options extended"
+                                        onClick={() => setGameMode(GameMode.EXTENDED)}>Extended
+                                </button>
+                            </div>
+                        </div>
+                        <div className="col-sm-4">
+                            <div className="form-group">
+                                <button className="btn btn-primary options classic"
+                                        onClick={() => setGameMode(GameMode.CLASSIC)}>Classic
+                                </button>
+                            </div>
+                        </div>
+                        <div className="col-sm-4">
+                            <div className="form-group">
+                                <button className="btn btn-primary options fresh"
+                                        onClick={() => setGameMode(GameMode.FRESH)}>Fresh
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                    <br/>
+                    <button className="btn btn-primary separated thick" onClick={handleCreateGame}>Create</button>
                 </div>
             case GameState.JOIN:
                 return <div className="form-group custom">
@@ -240,13 +301,13 @@ const Consequences: React.FC = () => {
                     }
                     <br/>
                     <div className="waiting-div">
-                    {waitingFor.map((player: string) =>
-                        <div className="waiting-avatar">
-                            <label className="label warning">{player}</label>
-                            <img className="avatar waiting" src={getPlayerImage(player)}/>
-                            <br/>
-                        </div>
-                    )}
+                        {waitingFor.map((player: string) =>
+                            <div className="waiting-avatar">
+                                <label className="label warning">{player}</label>
+                                <img className="avatar waiting" src={getPlayerImage(player)}/>
+                                <br/>
+                            </div>
+                        )}
                     </div>
                 </div>
             case GameState.STORY_DISPLAY:

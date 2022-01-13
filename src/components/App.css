@@ -64,7 +64,7 @@
 
 img.avatar {
     margin: auto;
-    width: 25%;
+    width: 20%;
     border-radius: 50%;
     box-shadow: 0 0 5px 5px rgb(255, 255, 255);
 }
@@ -103,6 +103,28 @@ img.avatar.selected {
 
 .input {
     width: 100%;
+}
+
+.options {
+    width: 75%;
+}
+
+.classic {
+    color: #000000;
+    background-color: #ff9800;
+    border-color: #b77112;
+}
+
+.extended {
+    color: #000000;
+    background-color: #17c50d;
+    border-color: #1c8118;
+}
+
+.fresh {
+    color: #000000;
+    background-color: #ec533f;
+    border-color: #a6382d;
 }
 
 .separated {
