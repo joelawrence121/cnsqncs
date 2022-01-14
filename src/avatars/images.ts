@@ -1,16 +1,16 @@
 import azy from './azy.png';
-import beni from './beni.png';
+import a1 from './a1.jpeg';
 import brune from './brune.png';
 import c1 from './c1.jpeg';
-import c2 from './c2.jpeg';
+import a2 from './a2.jpg';
 import cate from './cate.png';
-import h1 from './h1.jpg';
+import a3 from './a3.jpeg';
 import kanz from './kanz.png';
 import oran from './oran.png';
 import rat from './rat.jpg';
 import s1 from './s1.jpg';
-import susc from './susc.png';
+import a4 from './a4.jpeg';
 
 export default [
-    azy, beni, brune, c1, c2, cate, h1, kanz, oran, rat, s1, susc
+    azy, a1, brune, c1, a2, cate, a3, kanz, oran, rat, s1, a4
 ]
