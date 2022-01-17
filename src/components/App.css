@@ -90,6 +90,10 @@ img.avatar.waiting {
     overflow: hidden;
 }
 
+img.avatar.selectable {
+    transition: box-shadow 1s ease
+}
+
 img.avatar.selectable:hover {
     box-shadow: 0 0 5px 3px rgb(0, 0, 0);
 }
