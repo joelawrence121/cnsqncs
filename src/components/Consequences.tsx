@@ -273,7 +273,8 @@ const Consequences: React.FC = () => {
                 return <div className="form-group custom">
                     <img className="avatar" src={IMAGE_MAP.get(avatar)}/><br/>
                     <label className="label other">{gameCode}</label>
-                    <button className="btn btn-primary separated" onClick={handleStart}>Start</button>
+                    {personList.length > 1 ?
+                        <button className="btn btn-primary separated" onClick={handleStart}>Start</button> : <></>}
                     <br/>
                     {personList}
                 </div>
