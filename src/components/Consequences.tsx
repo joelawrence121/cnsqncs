@@ -207,6 +207,22 @@ const Consequences: React.FC = () => {
         }
     }
 
+    function getUserWaitingList() {
+        let personList: JSX.Element[] = []
+        players.forEach((value, key, map) => {
+            if (key !== playerName) {
+                personList.push(
+                    <div className="waiting-avatar lobby">
+                        <label className="label success">{key}</label>
+                        <img className="avatar waiting" src={IMAGE_MAP.get(value)}/>
+                        <br/>
+                    </div>
+                )
+            }
+        })
+        return personList;
+    }
+
     function getComponent(state: GameState) {
         switch (state) {
             case GameState.HOME:
@@ -266,30 +282,26 @@ const Consequences: React.FC = () => {
                     <button className="btn btn-primary separated" onClick={handleJoin}>Join</button>
                 </div>
             case GameState.LOBBY_CREATED:
-                let personList: JSX.Element[] = []
-                players.forEach((value: string, key: string) => {
-                    personList.push(<label className="label success">{key}</label>)
-                })
+                let personList = getUserWaitingList()
                 return <div className="form-group custom">
                     <img className="avatar" src={IMAGE_MAP.get(avatar)}/><br/>
                     <label className="label other">{gameCode}</label>
-                    {personList.length > 1 ?
-                        <button className="btn btn-primary separated" onClick={handleStart}>Start</button> : <></>}
+                    {personList.length > 0 ?
+                        <button className="btn btn-primary separated" onClick={handleStart}>Start</button> : <></>
+                    }
                     <br/>
                     {personList}
                 </div>
             case GameState.LOBBY_JOINED:
-                let personList2: JSX.Element[] = []
-                players.forEach((value: string, key: string) => {
-                    personList2.push(<label className="label success">{key}</label>)
-                })
                 return <div className="form-group custom">
                     <img className="avatar" src={IMAGE_MAP.get(avatar)}/>
                     <label className="label other">{gameCode}</label>
                     <label className="label other">Waiting</label><br/>
-                    {personList2}
+                    {getUserWaitingList()}
                 </div>
             case GameState.IN_PROGRESS:
+                console.log("Waiting for: ")
+                console.log(waitingFor)
                 return <div className="form-group custom input">
                     <img className="avatar" src={IMAGE_MAP.get(avatar)}/>
                     <label className="label title">{storyState}</label>
