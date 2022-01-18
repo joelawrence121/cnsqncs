@@ -3,11 +3,8 @@ import ConsequencesService from "../ConsequencesService";
 import Response, {Entry} from "../types/Response";
 import Collapsible from "react-collapsible";
 import images from "../avatars/images";
-import {GameMode} from "../types/Types";
-
-const enum GameState {
-    HOME, JOIN, CREATE_OPTIONS, LOBBY_CREATED, LOBBY_JOINED, READY_TO_START, IN_PROGRESS, STORY_DISPLAY
-}
+import {GameMode, GameState} from "../types/Types";
+import CreateGame from "./CreateGame";
 
 let IMAGE_MAP = new Map<string, any>();
 images.map(value => IMAGE_MAP.set(value.toUpperCase(), value))
@@ -64,7 +61,7 @@ const Consequences: React.FC = () => {
         setEntry(e.target.value)
     }
 
-    // page data hook
+    // game state hook - load data on state change
     useEffect(() => {
         switch (gameState) {
             case GameState.LOBBY_CREATED:
@@ -166,18 +163,22 @@ const Consequences: React.FC = () => {
                     .then(response => {
                         console.log(response)
                         let responseData = response.data as unknown as Response
+                        // update player list
                         if (responseData.players) {
                             let newPlayers = new Map<string, string>();
                             responseData.players.slice().map(value => newPlayers.set(value.name, value.avatar))
                             setPlayers(newPlayers)
                         }
+                        // transition to in progress if host started game
                         if (gameState == GameState.LOBBY_JOINED && responseData.story) {
                             if (responseData.story.length > 0) setGameState(GameState.IN_PROGRESS)
                         }
+                        // story progression
                         if (gameState == GameState.IN_PROGRESS && responseData.waiting_for && responseData.story_state) {
                             let waitingFor = responseData.waiting_for.slice()
                             setWaitingFor(waitingFor)
                             setStoryState(responseData.story_state)
+                            // progress to finished state
                             if (responseData.story_state === '<finished>' && responseData.story && responseData.story.length > 0 && responseData.story[0].entries) {
                                 setGameState(GameState.STORY_DISPLAY)
                                 setCompleteEntries(responseData.story[0].entries)
@@ -245,35 +246,10 @@ const Consequences: React.FC = () => {
                     <button className="btn btn-primary separated" onClick={handleJoin}>Join</button>
                 </div>
             case GameState.CREATE_OPTIONS:
-                return <div className="form-group custom">
-                    <img className="avatar" src={IMAGE_MAP.get(avatar)}/>
-                    <label className="label title">{playerName}</label><br/>
-                    <div className="row">
-                        <div className="col-sm-4">
-                            <div className="form-group">
-                                <button className="btn btn-primary options extended"
-                                        onClick={() => setGameMode(GameMode.EXTENDED)}>Extended
-                                </button>
-                            </div>
-                        </div>
-                        <div className="col-sm-4">
-                            <div className="form-group">
-                                <button className="btn btn-primary options classic"
-                                        onClick={() => setGameMode(GameMode.CLASSIC)}>Classic
-                                </button>
-                            </div>
-                        </div>
-                        <div className="col-sm-4">
-                            <div className="form-group">
-                                <button className="btn btn-primary options fresh"
-                                        onClick={() => setGameMode(GameMode.FRESH)}>Fresh
-                                </button>
-                            </div>
-                        </div>
-                    </div>
-                    <br/>
-                    <button className="btn btn-primary separated thick" onClick={handleCreateGame}>Create</button>
-                </div>
+                return <CreateGame
+                    imageMap={IMAGE_MAP} playerName={playerName} avatar={avatar}
+                    setGameMode={setGameMode} handleCreateGame={handleCreateGame}
+                />
             case GameState.JOIN:
                 return <div className="form-group custom">
                     <img className="avatar" src={IMAGE_MAP.get(avatar)}/><br/>
@@ -300,8 +276,6 @@ const Consequences: React.FC = () => {
                     {getUserWaitingList()}
                 </div>
             case GameState.IN_PROGRESS:
-                console.log("Waiting for: ")
-                console.log(waitingFor)
                 return <div className="form-group custom input">
                     <img className="avatar" src={IMAGE_MAP.get(avatar)}/>
                     <label className="label title">{storyState}</label>
