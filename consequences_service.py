@@ -65,6 +65,7 @@ class ConsequencesService:
     def clear_games(self, confirm: bool):
         if confirm:
             return_obj = {"cleared": len(self.games)}
+            self.games = {}
         else:
             return_obj = {"games": []}
             for game_id in self.games:
