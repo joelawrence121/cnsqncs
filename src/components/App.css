@@ -144,8 +144,7 @@ img.avatar.selected {
 .Collapsible {
     font-style: italic;
     user-select: none;
-    text-align: left;
-    margin-bottom: 5px;
+    text-align: center;
     max-height: 100%;
     animation: cardEntrance 700ms ease-out;
     animation-fill-mode: backwards;
@@ -154,6 +153,7 @@ img.avatar.selected {
 .Collapsible__contentInner {
     padding: 10px;
     font-style: normal;
+    font-weight: bold;
 }
 
 .Collapsible__trigger {
@@ -162,7 +162,6 @@ img.avatar.selected {
     text-decoration: none;
     position: relative;
     padding: 10px;
-    border: 1px ridge white;
 }
 
 .Collapsible__trigger:after {
@@ -171,7 +170,7 @@ img.avatar.selected {
     right: 10px;
     top: 10px;
     display: block;
-    transition: transform 300ms;
+    transition: transform 100ms;
 }
 
 .Collapsible__trigger.is-open:after {

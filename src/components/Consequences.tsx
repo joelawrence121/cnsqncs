@@ -5,6 +5,7 @@ import Collapsible from "react-collapsible";
 import images from "../avatars/images";
 import {GameMode, GameState} from "../types/Types";
 import CreateGame from "./CreateGame";
+import {StorySubmission} from "./StorySubmission";
 
 let IMAGE_MAP = new Map<string, any>();
 images.map(value => IMAGE_MAP.set(value.toUpperCase(), value))
@@ -125,7 +126,7 @@ const Consequences: React.FC = () => {
         }
     }, [gameState])
 
-    // submit hook
+    // entry submission hook
     useEffect(() => {
         ConsequencesService.postEntry({
             name: playerName,
@@ -202,12 +203,6 @@ const Consequences: React.FC = () => {
         return <img className="avatar selectable" src={value} onClick={() => setAvatar(value.toUpperCase())}/>
     }
 
-    function getPlayerImage(player: string) {
-        if (players.get(player)) {
-            return IMAGE_MAP.get(players.get(player) as string)
-        }
-    }
-
     function getUserWaitingList() {
         let personList: JSX.Element[] = []
         players.forEach((value, key, map) => {
@@ -228,17 +223,11 @@ const Consequences: React.FC = () => {
         switch (state) {
             case GameState.HOME:
                 return <div className="form-group custom">
-                    <div className="avatars">
-                        {images.slice(0, 4).map(value => getImage(value))}
-                    </div>
+                    <div className="avatars">{images.slice(0, 4).map(value => getImage(value))}</div>
                     <br/>
-                    <div className="avatars">
-                        {images.slice(4, 8).map(value => getImage(value))}
-                    </div>
+                    <div className="avatars">{images.slice(4, 8).map(value => getImage(value))}</div>
                     <br/>
-                    <div className="avatars">
-                        {images.slice(8, 12).map(value => getImage(value))}
-                    </div>
+                    <div className="avatars">{images.slice(8, 12).map(value => getImage(value))}</div>
                     <br/>
                     <input type="text" className="form-control separated" placeholder="Name" value={playerName}
                            onChange={updatePlayerName}/>
@@ -276,27 +265,11 @@ const Consequences: React.FC = () => {
                     {getUserWaitingList()}
                 </div>
             case GameState.IN_PROGRESS:
-                return <div className="form-group custom input">
-                    <img className="avatar" src={IMAGE_MAP.get(avatar)}/>
-                    <label className="label title">{storyState}</label>
-                    {waitingFor.includes(playerName) ?
-                        <>
-                            <input type="text" className="form-control separated" value={entry} onChange={updateEntry}/>
-                            <button className="btn btn-primary separated" onClick={handleSubmit}>Submit</button>
-                        </>
-                        : <label className="label info">Submitted</label>
-                    }
-                    <br/>
-                    <div className="waiting-div">
-                        {waitingFor.map((player: string) =>
-                            <div className="waiting-avatar">
-                                <label className="label warning">{player}</label>
-                                <img className="avatar waiting" src={getPlayerImage(player)}/>
-                                <br/>
-                            </div>
-                        )}
-                    </div>
-                </div>
+                return <StorySubmission
+                    imageMap={IMAGE_MAP} players={players} avatar={avatar} storyState={storyState}
+                    waitingFor={waitingFor} playerName={playerName} entry={entry}
+                    updateEntry={updateEntry}
+                    handleSubmit={handleSubmit}/>
             case GameState.STORY_DISPLAY:
                 return <div className="form-group custom">
                     {completeEntries.map((entry: Entry, index: number) =>
