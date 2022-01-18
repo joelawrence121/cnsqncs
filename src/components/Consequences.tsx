@@ -6,6 +6,7 @@ import images from "../avatars/images";
 import {GameMode, GameState} from "../types/Types";
 import CreateGame from "./CreateGame";
 import {StorySubmission} from "./StorySubmission";
+import {RequestBuilder} from "../types/RequestBuilder";
 
 let IMAGE_MAP = new Map<string, any>();
 images.map(value => IMAGE_MAP.set(value.toUpperCase(), value))
@@ -66,13 +67,7 @@ const Consequences: React.FC = () => {
     useEffect(() => {
         switch (gameState) {
             case GameState.LOBBY_CREATED:
-                ConsequencesService.createGame({
-                    name: playerName,
-                    avatar: avatar,
-                    mode: gameMode,
-                    game_id: undefined,
-                    entry: undefined
-                })
+                ConsequencesService.createGame(new RequestBuilder().playerName(playerName).avatar(avatar).mode(gameMode).build())
                     .then(response => {
                         console.log(response)
                         let responseData = response.data as unknown as Response
@@ -86,13 +81,7 @@ const Consequences: React.FC = () => {
                     })
                 break
             case GameState.LOBBY_JOINED:
-                ConsequencesService.joinGame({
-                    name: playerName,
-                    avatar: avatar,
-                    game_id: gameCode,
-                    entry: undefined,
-                    mode: undefined
-                })
+                ConsequencesService.joinGame(new RequestBuilder().playerName(playerName).avatar(avatar).mode(gameMode).build())
                     .then(response => {
                         console.log(response)
                         let responseData = response.data as unknown as Response
@@ -107,13 +96,7 @@ const Consequences: React.FC = () => {
                     })
                 break
             case GameState.READY_TO_START:
-                ConsequencesService.startGame({
-                    name: playerName,
-                    game_id: gameCode,
-                    avatar: undefined,
-                    entry: undefined,
-                    mode: undefined
-                })
+                ConsequencesService.startGame(new RequestBuilder().playerName(playerName).game_id(gameCode).build())
                     .then(response => {
                         console.log(response)
                         let responseData = response.data as unknown as Response
@@ -128,13 +111,7 @@ const Consequences: React.FC = () => {
 
     // entry submission hook
     useEffect(() => {
-        ConsequencesService.postEntry({
-            name: playerName,
-            avatar: undefined,
-            game_id: gameCode,
-            entry: entry,
-            mode: undefined
-        })
+        ConsequencesService.postEntry(new RequestBuilder().playerName(playerName).game_id(gameCode).entry(entry).build())
             .then(response => {
                 console.log(response)
                 let responseData = response.data as unknown as Response
@@ -154,13 +131,7 @@ const Consequences: React.FC = () => {
         const interval = setInterval(() => {
             if (POLL_GAME_STATES.includes(gameState)) {
                 console.log("Polling " + playerName + " " + gameCode)
-                ConsequencesService.pollGame({
-                    name: playerName,
-                    avatar: undefined,
-                    game_id: gameCode,
-                    entry: undefined,
-                    mode: undefined
-                })
+                ConsequencesService.pollGame(new RequestBuilder().playerName(playerName).game_id(gameCode).build())
                     .then(response => {
                         console.log(response)
                         let responseData = response.data as unknown as Response

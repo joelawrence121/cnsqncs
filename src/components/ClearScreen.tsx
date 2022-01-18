@@ -61,7 +61,6 @@ const ClearScreen: React.FC = () => {
         setScreenState(ScreenState.CLEAR_CONFIRM)
     }
 
-
     function getComponent(state: ScreenState) {
         switch (state) {
             case ScreenState.PENDING:
