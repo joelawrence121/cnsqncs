@@ -7,6 +7,7 @@ import {GameMode, GameState} from "../types/Types";
 import CreateGame from "./CreateGame";
 import {StorySubmission} from "./StorySubmission";
 import {RequestBuilder} from "../types/RequestBuilder";
+import HomeScreen from "./HomeScreen";
 
 let IMAGE_MAP = new Map<string, any>();
 images.map(value => IMAGE_MAP.set(value.toUpperCase(), value))
@@ -166,14 +167,6 @@ const Consequences: React.FC = () => {
         return () => clearInterval(interval);
     }, [gameState, gameCode, playerName]);
 
-
-    function getImage(value: any) {
-        if (avatar === value.toUpperCase()) {
-            return <img className="avatar selected" src={value} onClick={() => setAvatar(value.toUpperCase())}/>
-        }
-        return <img className="avatar selectable" src={value} onClick={() => setAvatar(value.toUpperCase())}/>
-    }
-
     function getUserWaitingList() {
         let personList: JSX.Element[] = []
         players.forEach((value, key, map) => {
@@ -193,18 +186,10 @@ const Consequences: React.FC = () => {
     function getComponent(state: GameState) {
         switch (state) {
             case GameState.HOME:
-                return <div className="form-group custom">
-                    <div className="avatars">{images.slice(0, 4).map(value => getImage(value))}</div>
-                    <br/>
-                    <div className="avatars">{images.slice(4, 8).map(value => getImage(value))}</div>
-                    <br/>
-                    <div className="avatars">{images.slice(8, 12).map(value => getImage(value))}</div>
-                    <br/>
-                    <input type="text" className="form-control separated" placeholder="Name" value={playerName}
-                           onChange={updatePlayerName}/>
-                    <button className="btn btn-primary separated" onClick={handleCreateMenu}>Create</button>
-                    <button className="btn btn-primary separated" onClick={handleJoin}>Join</button>
-                </div>
+                return <HomeScreen
+                    avatar={avatar} setAvatar={setAvatar} playerName={playerName} updatePlayerName={updatePlayerName}
+                    handleJoin={handleJoin} handleCreateMenu={handleCreateMenu}
+                />
             case GameState.CREATE_OPTIONS:
                 return <CreateGame
                     imageMap={IMAGE_MAP} playerName={playerName} avatar={avatar}
