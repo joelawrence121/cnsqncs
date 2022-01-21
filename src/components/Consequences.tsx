@@ -82,7 +82,7 @@ const Consequences: React.FC = () => {
                     })
                 break
             case GameState.LOBBY_JOINED:
-                ConsequencesService.joinGame(new RequestBuilder().playerName(playerName).avatar(avatar).mode(gameMode).build())
+                ConsequencesService.joinGame(new RequestBuilder().playerName(playerName).game_id(gameCode).avatar(avatar).mode(gameMode).build())
                     .then(response => {
                         console.log(response)
                         let responseData = response.data as unknown as Response
@@ -187,8 +187,8 @@ const Consequences: React.FC = () => {
         switch (state) {
             case GameState.HOME:
                 return <HomeScreen
-                    avatar={avatar} setAvatar={setAvatar} playerName={playerName} updatePlayerName={updatePlayerName}
-                    handleJoin={handleJoin} handleCreateMenu={handleCreateMenu}
+                    avatar={avatar} setAvatar={setAvatar} playerName={playerName}
+                    updatePlayerName={updatePlayerName} handleJoin={handleJoin} handleCreateMenu={handleCreateMenu}
                 />
             case GameState.CREATE_OPTIONS:
                 return <CreateGame

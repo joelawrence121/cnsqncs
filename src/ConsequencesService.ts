@@ -12,6 +12,7 @@ const createGame = (request: Request) => {
 };
 
 const joinGame = (request: Request) => {
+    console.log(request)
     return http.post("/join", request, headers)
 }
 
