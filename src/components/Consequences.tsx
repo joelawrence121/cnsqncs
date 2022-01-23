@@ -3,10 +3,11 @@ import ConsequencesService from "../ConsequencesService";
 import Response, {Entry} from "../types/Response";
 import Collapsible from "react-collapsible";
 import images from "../avatars/images";
-
-const enum GameState {
-    HOME, JOIN, LOBBY_CREATED, LOBBY_JOINED, READY_TO_START, IN_PROGRESS, STORY_DISPLAY
-}
+import {GameMode, GameState} from "../types/Types";
+import CreateGame from "./CreateGame";
+import {StorySubmission} from "./StorySubmission";
+import {RequestBuilder} from "../types/RequestBuilder";
+import HomeScreen from "./HomeScreen";
 
 let IMAGE_MAP = new Map<string, any>();
 images.map(value => IMAGE_MAP.set(value.toUpperCase(), value))
@@ -25,8 +26,13 @@ const Consequences: React.FC = () => {
     const [gameCode, setGameCode] = useState('')
     const [completeEntries, setCompleteEntries] = useState<Entry[]>([])
     const [avatar, setAvatar] = useState<string>('')
+    const [gameMode, setGameMode] = useState<GameMode>(GameMode.CLASSIC)
 
-    function handleCreate() {
+    function handleCreateMenu() {
+        setGameState(GameState.CREATE_OPTIONS)
+    }
+
+    function handleCreateGame() {
         setGameState(GameState.LOBBY_CREATED)
     }
 
@@ -58,11 +64,11 @@ const Consequences: React.FC = () => {
         setEntry(e.target.value)
     }
 
-    // page data hook
+    // game state hook - load data on state change
     useEffect(() => {
         switch (gameState) {
             case GameState.LOBBY_CREATED:
-                ConsequencesService.createGame({name: playerName, avatar: avatar, game_id: undefined, entry: undefined})
+                ConsequencesService.createGame(new RequestBuilder().playerName(playerName).avatar(avatar).mode(gameMode).build())
                     .then(response => {
                         console.log(response)
                         let responseData = response.data as unknown as Response
@@ -76,7 +82,7 @@ const Consequences: React.FC = () => {
                     })
                 break
             case GameState.LOBBY_JOINED:
-                ConsequencesService.joinGame({name: playerName, avatar: avatar, game_id: gameCode, entry: undefined})
+                ConsequencesService.joinGame(new RequestBuilder().playerName(playerName).game_id(gameCode).avatar(avatar).mode(gameMode).build())
                     .then(response => {
                         console.log(response)
                         let responseData = response.data as unknown as Response
@@ -91,12 +97,7 @@ const Consequences: React.FC = () => {
                     })
                 break
             case GameState.READY_TO_START:
-                ConsequencesService.startGame({
-                    name: playerName,
-                    game_id: gameCode,
-                    avatar: undefined,
-                    entry: undefined
-                })
+                ConsequencesService.startGame(new RequestBuilder().playerName(playerName).game_id(gameCode).build())
                     .then(response => {
                         console.log(response)
                         let responseData = response.data as unknown as Response
@@ -109,9 +110,9 @@ const Consequences: React.FC = () => {
         }
     }, [gameState])
 
-    // submit hook
+    // entry submission hook
     useEffect(() => {
-        ConsequencesService.postEntry({name: playerName, avatar: undefined, game_id: gameCode, entry: entry})
+        ConsequencesService.postEntry(new RequestBuilder().playerName(playerName).game_id(gameCode).entry(entry).build())
             .then(response => {
                 console.log(response)
                 let responseData = response.data as unknown as Response
@@ -131,22 +132,26 @@ const Consequences: React.FC = () => {
         const interval = setInterval(() => {
             if (POLL_GAME_STATES.includes(gameState)) {
                 console.log("Polling " + playerName + " " + gameCode)
-                ConsequencesService.pollGame({name: playerName, avatar: undefined, game_id: gameCode, entry: undefined})
+                ConsequencesService.pollGame(new RequestBuilder().playerName(playerName).game_id(gameCode).build())
                     .then(response => {
                         console.log(response)
                         let responseData = response.data as unknown as Response
+                        // update player list
                         if (responseData.players) {
                             let newPlayers = new Map<string, string>();
                             responseData.players.slice().map(value => newPlayers.set(value.name, value.avatar))
                             setPlayers(newPlayers)
                         }
+                        // transition to in progress if host started game
                         if (gameState == GameState.LOBBY_JOINED && responseData.story) {
                             if (responseData.story.length > 0) setGameState(GameState.IN_PROGRESS)
                         }
+                        // story progression
                         if (gameState == GameState.IN_PROGRESS && responseData.waiting_for && responseData.story_state) {
                             let waitingFor = responseData.waiting_for.slice()
                             setWaitingFor(waitingFor)
                             setStoryState(responseData.story_state)
+                            // progress to finished state
                             if (responseData.story_state === '<finished>' && responseData.story && responseData.story.length > 0 && responseData.story[0].entries) {
                                 setGameState(GameState.STORY_DISPLAY)
                                 setCompleteEntries(responseData.story[0].entries)
@@ -162,41 +167,34 @@ const Consequences: React.FC = () => {
         return () => clearInterval(interval);
     }, [gameState, gameCode, playerName]);
 
-
-    function getImage(value: any) {
-        if (avatar === value.toUpperCase()) {
-            return <img className="avatar selected" src={value} onClick={() => setAvatar(value.toUpperCase())}/>
-        }
-        return <img className="avatar selectable" src={value} onClick={() => setAvatar(value.toUpperCase())}/>
-    }
-
-    function getPlayerImage(player: string) {
-        if (players.get(player)) {
-            return IMAGE_MAP.get(players.get(player) as string)
-        }
+    function getUserWaitingList() {
+        let personList: JSX.Element[] = []
+        players.forEach((value, key, map) => {
+            if (key !== playerName) {
+                personList.push(
+                    <div className="waiting-avatar lobby">
+                        <label className="label success">{key}</label>
+                        <img className="avatar waiting" src={IMAGE_MAP.get(value)}/>
+                        <br/>
+                    </div>
+                )
+            }
+        })
+        return personList;
     }
 
     function getComponent(state: GameState) {
         switch (state) {
             case GameState.HOME:
-                return <div className="form-group custom">
-                    <div className="avatars">
-                        {images.slice(0, 4).map(value => getImage(value))}
-                    </div>
-                    <br/>
-                    <div className="avatars">
-                        {images.slice(4, 8).map(value => getImage(value))}
-                    </div>
-                    <br/>
-                    <div className="avatars">
-                        {images.slice(8, 12).map(value => getImage(value))}
-                    </div>
-                    <br/>
-                    <input type="text" className="form-control separated" placeholder="Name" value={playerName}
-                           onChange={updatePlayerName}/>
-                    <button className="btn btn-primary separated" onClick={handleCreate}>Create</button>
-                    <button className="btn btn-primary separated" onClick={handleJoin}>Join</button>
-                </div>
+                return <HomeScreen
+                    avatar={avatar} setAvatar={setAvatar} playerName={playerName}
+                    updatePlayerName={updatePlayerName} handleJoin={handleJoin} handleCreateMenu={handleCreateMenu}
+                />
+            case GameState.CREATE_OPTIONS:
+                return <CreateGame
+                    imageMap={IMAGE_MAP} playerName={playerName} avatar={avatar}
+                    setGameMode={setGameMode} handleCreateGame={handleCreateGame}
+                />
             case GameState.JOIN:
                 return <div className="form-group custom">
                     <img className="avatar" src={IMAGE_MAP.get(avatar)}/><br/>
@@ -205,50 +203,29 @@ const Consequences: React.FC = () => {
                     <button className="btn btn-primary separated" onClick={handleJoin}>Join</button>
                 </div>
             case GameState.LOBBY_CREATED:
-                let personList: JSX.Element[] = []
-                players.forEach((value: string, key: string) => {
-                    personList.push(<label className="label success">{key}</label>)
-                })
+                let personList = getUserWaitingList()
                 return <div className="form-group custom">
                     <img className="avatar" src={IMAGE_MAP.get(avatar)}/><br/>
                     <label className="label other">{gameCode}</label>
-                    <button className="btn btn-primary separated" onClick={handleStart}>Start</button>
+                    {personList.length > 0 ?
+                        <button className="btn btn-primary separated" onClick={handleStart}>Start</button> : <></>
+                    }
                     <br/>
                     {personList}
                 </div>
             case GameState.LOBBY_JOINED:
-                let personList2: JSX.Element[] = []
-                players.forEach((value: string, key: string) => {
-                    personList2.push(<label className="label success">{key}</label>)
-                })
                 return <div className="form-group custom">
                     <img className="avatar" src={IMAGE_MAP.get(avatar)}/>
                     <label className="label other">{gameCode}</label>
                     <label className="label other">Waiting</label><br/>
-                    {personList2}
+                    {getUserWaitingList()}
                 </div>
             case GameState.IN_PROGRESS:
-                return <div className="form-group custom input">
-                    <img className="avatar" src={IMAGE_MAP.get(avatar)}/>
-                    <label className="label title">{storyState}</label>
-                    {waitingFor.includes(playerName) ?
-                        <>
-                            <input type="text" className="form-control separated" value={entry} onChange={updateEntry}/>
-                            <button className="btn btn-primary separated" onClick={handleSubmit}>Submit</button>
-                        </>
-                        : <label className="label info">Submitted</label>
-                    }
-                    <br/>
-                    <div className="waiting-div">
-                    {waitingFor.map((player: string) =>
-                        <div className="waiting-avatar">
-                            <label className="label warning">{player}</label>
-                            <img className="avatar waiting" src={getPlayerImage(player)}/>
-                            <br/>
-                        </div>
-                    )}
-                    </div>
-                </div>
+                return <StorySubmission
+                    imageMap={IMAGE_MAP} players={players} avatar={avatar} storyState={storyState}
+                    waitingFor={waitingFor} playerName={playerName} entry={entry}
+                    updateEntry={updateEntry}
+                    handleSubmit={handleSubmit}/>
             case GameState.STORY_DISPLAY:
                 return <div className="form-group custom">
                     {completeEntries.map((entry: Entry, index: number) =>

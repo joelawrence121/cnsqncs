@@ -1,5 +1,5 @@
-from objects.api import EntryRequest
-from objects.domain import Game, GameState
+from server.client_json import EntryRequest
+from server.domain import Game, GameState
 
 
 class ConsequencesService:
@@ -15,11 +15,11 @@ class ConsequencesService:
             'players': game.get_players()
         }
 
-    def create_game(self, player_name, avatar):
+    def create_game(self, player_name, avatar, mode):
         if len(player_name) < 1:
             player_name = "Player 1"
 
-        game = Game(player_name, avatar)
+        game = Game(player_name, avatar, mode)
         self.games[game.id] = game
         response_ob = self.__get_response_obj(game)
         response_ob['player_name'] = player_name
@@ -61,3 +61,14 @@ class ConsequencesService:
 
         self.games[request.game_id].post_entry(request.name, request.entry)
         return self.__get_response_obj(self.games[request.game_id])
+
+    def clear_games(self, confirm: bool):
+        if confirm:
+            return_obj = {"cleared": len(self.games)}
+            self.games = {}
+        else:
+            return_obj = {"games": []}
+            for game_id in self.games:
+                if self.games[game_id].game_state != GameState.FINISHED:
+                    return_obj["games"].append(game_id)
+        return return_obj

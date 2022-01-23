@@ -25,3 +25,8 @@ export default interface Response {
     story: Story[] | undefined,
     player_name: string | undefined
 }
+
+export interface ClearResponse {
+    games: string[] | undefined,
+    cleared: number | undefined,
+}
