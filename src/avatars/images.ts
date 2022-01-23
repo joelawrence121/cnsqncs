@@ -9,12 +9,11 @@ import kanz from './kanz.png';
 import oran from './oran.png';
 import rat from './rat.jpg';
 import s1 from './s1.jpg';
-import a4 from './a4.jpeg';
 import g1 from './g1.jpeg';
 import l1 from './l1.jpeg';
 import cc from './cc.jpeg';
 import sun from './sun.jpeg';
 
 export default [
-    azy, a1, brune, c1, a2, cate, a3, kanz, oran, rat, s1, a4, g1, l1, cc, sun
+    azy, a1, brune, c1, a2, cate, a3, kanz, oran, rat, s1, g1, l1, cc, sun
 ]
