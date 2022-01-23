@@ -5,7 +5,7 @@ from fastapi import FastAPI
 from starlette.middleware.cors import CORSMiddleware
 
 from consequences_service import ConsequencesService
-from objects.api import CreateRequest, JoinRequest, PollRequest, EntryRequest, ClearRequest
+from server.client_json import CreateRequest, JoinRequest, PollRequest, EntryRequest, ClearRequest
 
 app = FastAPI()
 consequences_service = ConsequencesService()

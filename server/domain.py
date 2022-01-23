@@ -1,8 +1,8 @@
 import uuid
 from enum import Enum
 
-import story_service
-from story_service import StoryState
+from server import story_service
+from server.story_service import StoryState
 
 
 class Player:

@@ -1,5 +1,5 @@
-from objects.api import EntryRequest
-from objects.domain import Game, GameState
+from server.client_json import EntryRequest
+from server.domain import Game, GameState
 
 
 class ConsequencesService:
