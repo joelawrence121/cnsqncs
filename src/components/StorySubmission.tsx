@@ -20,6 +20,12 @@ export function StorySubmission(props: StorySubmissionProps) {
         }
     }
 
+    function getButton(entry: string) {
+        if (entry && entry.length > 0) {
+            return <button className="btn btn-primary separated fadein" onClick={props.handleSubmit}>Submit</button>
+        }
+    }
+
     return (
         <div className="form-group custom input">
             <img className="avatar" src={props.imageMap.get(props.avatar)}/>
@@ -28,7 +34,7 @@ export function StorySubmission(props: StorySubmissionProps) {
                 <>
                     <input type="text" className="form-control separated" value={props.entry}
                            onChange={props.updateEntry}/>
-                    <button className="btn btn-primary separated" onClick={props.handleSubmit}>Submit</button>
+                    {getButton(props.entry)}
                 </>
                 : <label className="label info">Submitted</label>
             }

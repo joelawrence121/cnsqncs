@@ -16,9 +16,9 @@ function HomeScreen(props: HomeScreenProps) {
 
     function getImage(value: any) {
         if (props.avatar === value.toUpperCase()) {
-            return <img className="avatar selected" src={value} onClick={() => props.setAvatar(value.toUpperCase())}/>
+            return <img className="avatar selected fadein" src={value} onClick={() => props.setAvatar(value.toUpperCase())}/>
         }
-        return <img className="avatar selectable" src={value} onClick={() => props.setAvatar(value.toUpperCase())}/>
+        return <img className="avatar selectable fadein" src={value} onClick={() => props.setAvatar(value.toUpperCase())}/>
     }
 
     function getRandomSubarray(array: any[], size: number) {

@@ -184,3 +184,20 @@ img.avatar.selected {
 .Collapsible:nth-child(even) {
     background: rgba(255, 255, 255, 0.96);
 }
+
+/* Animation keyframes */
+
+.fadein {
+    animation: fadeInAnimation ease 1s;
+    animation-iteration-count: 1;
+    animation-fill-mode: forwards;
+}
+
+@keyframes fadeInAnimation {
+    0% {
+        opacity: 0;
+    }
+    100% {
+        opacity: 1;
+    }
+}
