@@ -36,7 +36,7 @@ export function StorySubmission(props: StorySubmissionProps) {
                            onChange={props.updateEntry}/>
                     {getButton(props.entry)}
                 </>
-                : <label className="label info">Submitted</label>
+                : <label className="label anonymous">Submitted</label>
             }
             <br/>
             <div className="waiting-div">

@@ -23,7 +23,8 @@ export default interface Response {
     waiting_for: string[] | undefined,
     players: Player[] | undefined,
     story: Story[] | undefined,
-    player_name: string | undefined
+    player_name: string | undefined,
+    host_player: string | undefined
 }
 
 export interface ClearResponse {

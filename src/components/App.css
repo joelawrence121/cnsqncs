@@ -33,6 +33,10 @@
     background-color: #2196F3;
 }
 
+.anonymous {
+    background-color: #92acc2;
+}
+
 .warning {
     background-color: #ff9800;
     opacity: 50%;
