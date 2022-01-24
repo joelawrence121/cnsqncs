@@ -118,25 +118,32 @@ img.avatar.selected {
 }
 
 .options {
+    color: #000000 !important;
     width: 75%;
+    opacity: 50%;
+}
+
+.mode_selected {
+    opacity: 100%;
+}
+
+.options:hover {
+    opacity: 100%;
 }
 
 .classic {
-    color: #000000;
-    background-color: #ff9800;
-    border-color: #b77112;
+    background-color: #ff9800 !important;
+    border-color: #b77112 !important;
 }
 
 .extended {
-    color: #000000;
-    background-color: #17c50d;
-    border-color: #1c8118;
+    background-color: #17c50d !important;
+    border-color: #1c8118 !important;
 }
 
 .fresh {
-    color: #000000;
-    background-color: #ec533f;
-    border-color: #a6382d;
+    background-color: #ec533f !important;
+    border-color: #a6382d !important;
 }
 
 .separated {
