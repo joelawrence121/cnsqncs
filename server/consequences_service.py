@@ -29,8 +29,10 @@ class ConsequencesService:
     def join_game(self, game_id, player_name, avatar):
         if game_id not in self.games.keys():
             return {'message': 'game_id: ' + game_id + ' does not exist.'}
-        if player_name in self.games[game_id].players:
-            return {'message': player_name + ' already taken.'}
+        # deal with same names
+        if player_name in [player.name for player in self.games[game_id].players]:
+            player_name += " (" + str(
+                len([player.name for player in self.games[game_id].players if player_name in player.name])) + ")"
         if len(player_name) < 1:
             player_name = "Player " + str((len(self.games[game_id].players)) + 1)
 
@@ -62,7 +64,7 @@ class ConsequencesService:
 
         self.games[request.game_id].post_entry(request.name, request.entry)
         return self.__get_response_obj(self.games[request.game_id])
-    
+
     def restart_game(self, game_id):
         if game_id not in self.games.keys():
             return {'message': 'game_id: ' + game_id + ' does not exist.'}
