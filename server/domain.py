@@ -45,6 +45,7 @@ class Game:
         self.story_state = self.state_sequence[1]
         self.players = [Player(player_name, True, avatar)]
         self.stories = []
+        self.host_player = player_name
 
     def get_waiting_for(self):
         return set([story.current_player for story in self.stories if story.state != self.story_state])
@@ -85,3 +86,8 @@ class Game:
         story = [story for story in self.stories if story.current_player == player_name][0]
         player = [player for player in self.players if player.name == player_name][0]
         story.post_entry(player, entry)
+
+    def restart(self):
+        self.game_state = GameState.NOT_STARTED
+        self.story_state = self.state_sequence[1]
+        self.stories = []

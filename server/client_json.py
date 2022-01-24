@@ -24,5 +24,9 @@ class EntryRequest(BaseModel):
     entry: str
 
 
+class RestartRequest(BaseModel):
+    game_id: str
+
+
 class ClearRequest(BaseModel):
     confirm: bool

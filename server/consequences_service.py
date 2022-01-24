@@ -12,7 +12,8 @@ class ConsequencesService:
             'game_state': game.game_state.value,
             'story_state': game.story_state.value,
             'waiting_for': game.get_waiting_for(),
-            'players': game.get_players()
+            'players': game.get_players(),
+            'host_player': game.host_player
         }
 
     def create_game(self, player_name, avatar, mode):
@@ -61,6 +62,13 @@ class ConsequencesService:
 
         self.games[request.game_id].post_entry(request.name, request.entry)
         return self.__get_response_obj(self.games[request.game_id])
+    
+    def restart_game(self, game_id):
+        if game_id not in self.games.keys():
+            return {'message': 'game_id: ' + game_id + ' does not exist.'}
+
+        self.games[game_id].restart()
+        return self.__get_response_obj(self.games[game_id])
 
     def clear_games(self, confirm: bool):
         if confirm:
