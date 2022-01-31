@@ -192,7 +192,8 @@ const Consequences: React.FC = () => {
                             if (responseData.story.length > 0) setGameState(GameState.IN_PROGRESS)
                         }
                         // story progression
-                        if (gameState == GameState.IN_PROGRESS && responseData.waiting_for && responseData.story_state) {
+                        if ((gameState == GameState.IN_PROGRESS || gameState == GameState.STORY_DISPLAY)
+                            && responseData.waiting_for && responseData.story_state) {
                             let waitingFor = responseData.waiting_for.slice()
                             setWaitingFor(waitingFor)
                             setStoryState(responseData.story_state)
@@ -211,7 +212,10 @@ const Consequences: React.FC = () => {
                             setPlayerName(responseData.player_name)
                             setGameCode(responseData.game_id)
                             setGameState(parseInt(responseData.game_state))
-
+                        }
+                        if (avatar.length == 0 && players && playerName) {
+                            const avatarUrl = players.get(playerName)
+                            setAvatar(avatarUrl ? avatarUrl : '')
                         }
                     })
                     .catch(e => {
@@ -221,7 +225,7 @@ const Consequences: React.FC = () => {
             }
         }, POLL_INTERVAL);
         return () => clearInterval(interval);
-    }, [gameState, gameCode, playerName, sessionId]);
+    }, [gameState, gameCode, playerName, sessionId, players]);
 
     function getUserWaitingList() {
         let personList: JSX.Element[] = []
