@@ -89,6 +89,7 @@ class ConsequencesService:
         if confirm:
             return_obj = {"cleared": len(self.games)}
             self.games = {}
+            self.sessions = {}
         else:
             return_obj = {"games": []}
             for game_id in self.games:
