@@ -28,8 +28,8 @@ export function StorySubmission(props: StorySubmissionProps) {
 
     return (
         <div className="form-group custom input">
-            <img className="avatar" src={props.imageMap.get(props.avatar)}/>
-            <label className="label title">{props.storyState}</label>
+            <img className="avatar" src={props.imageMap.get(props.avatar)}/><br/>
+            <label className="h3">{props.storyState}</label>
             {props.waitingFor.includes(props.playerName) ?
                 <>
                     <input type="text" className="form-control separated" value={props.entry}

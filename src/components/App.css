@@ -55,6 +55,7 @@
 .title {
     background-color: transparent;
     font-style: italic;
+    font-size: x-large;
     color: black;
     user-select: none
 }
