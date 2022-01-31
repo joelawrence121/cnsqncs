@@ -31,6 +31,13 @@ class Story:
         self.entries.append(Entry(player, self.state.value, entry))
 
 
+class Session:
+    def __init__(self, name: str, game_id: str, game_state: int):
+        self.name = name
+        self.game_id = game_id
+        self.game_state = game_state
+
+
 class GameState(Enum):
     NOT_STARTED = "<not started>"
     WAITING = "<waiting>"
