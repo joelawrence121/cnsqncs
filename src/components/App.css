@@ -4,6 +4,14 @@
     --stagger-delay: 100ms;
 }
 
+.transparent {
+    background-color: transparent !important;
+}
+
+body {
+    overflow: hidden;
+}
+
 /* Main Layout */
 
 .section.inner {
@@ -67,6 +75,7 @@
 img.avatar {
     margin: auto;
     width: 20%;
+    height: 20%;
     border-radius: 50%;
     box-shadow: 0 0 5px 5px rgb(255, 255, 255);
 }
