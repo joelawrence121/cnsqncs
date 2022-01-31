@@ -11,7 +11,9 @@ export class RequestBuilder {
             avatar: undefined,
             mode: undefined,
             game_id: undefined,
-            entry: undefined
+            entry: undefined,
+            session_id: undefined,
+            game_state: undefined
         }
     }
 
@@ -37,6 +39,20 @@ export class RequestBuilder {
 
     entry(entry: string): RequestBuilder {
         this._request.entry = entry;
+        return this;
+    }
+
+    session_id(session_id: string | undefined): RequestBuilder {
+        if (session_id) {
+            this._request.session_id = session_id;
+        }
+        return this;
+    }
+
+    game_state(game_state: number | undefined): RequestBuilder {
+        if (game_state) {
+            this._request.game_state = game_state;
+        }
         return this;
     }
 

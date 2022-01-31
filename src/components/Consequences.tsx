@@ -8,6 +8,8 @@ import {StorySubmission} from "./StorySubmission";
 import {RequestBuilder} from "../types/RequestBuilder";
 import HomeScreen from "./HomeScreen";
 import {GameMode, GameState} from "../types/Types";
+import {useHistory, useLocation} from 'react-router';
+import {v4 as uuidv4} from 'uuid';
 
 let IMAGE_MAP = new Map<string, any>();
 images.map(value => IMAGE_MAP.set(value.toUpperCase(), value))
@@ -15,7 +17,11 @@ images.map(value => IMAGE_MAP.set(value.toUpperCase(), value))
 const Consequences: React.FC = () => {
 
     const POLL_INTERVAL = 500
-    const POLL_GAME_STATES = [GameState.LOBBY_CREATED, GameState.LOBBY_JOINED, GameState.IN_PROGRESS, GameState.STORY_DISPLAY]
+    const history = useHistory();
+    const location = useLocation();
+    const POLL_GAME_STATES = [GameState.LOBBY_CREATED, GameState.LOBBY_JOINED, GameState.IN_PROGRESS, GameState.STORY_DISPLAY, GameState.FETCHING]
+
+    const [sessionId, setSessionId] = useState<string>();
     const [gameState, setGameState] = useState<GameState>(GameState.HOME)
     const [playerName, setPlayerName] = useState('')
     const [entry, setEntry] = useState('')
@@ -69,9 +75,24 @@ const Consequences: React.FC = () => {
         setEntry(e.target.value)
     }
 
+    function createSessionId() {
+        const sessionId = uuidv4();
+        const params = new URLSearchParams({["sessionId"]: sessionId});
+        history.replace({pathname: location.pathname, search: params.toString()});
+        setSessionId(sessionId);
+    }
+
     // game state hook - load data on state change
     useEffect(() => {
         switch (gameState) {
+            case GameState.HOME:
+                // check for session id in url parameter, poll to get details back
+                const urlParams = new URLSearchParams(location.search).get("sessionId")
+                if (urlParams) {
+                    setSessionId(urlParams)
+                    setGameState(GameState.FETCHING)
+                }
+                break
             case GameState.CREATE_GAME:
                 ConsequencesService.createGame(new RequestBuilder().playerName(playerName).avatar(avatar).mode(gameMode).build())
                     .then(response => {
@@ -81,6 +102,7 @@ const Consequences: React.FC = () => {
                             setGameCode(responseData.game_id)
                             setPlayerName(responseData.player_name)
                             setGameState(GameState.LOBBY_CREATED)
+                            createSessionId();
                         }
                     })
                     .catch(e => {
@@ -96,6 +118,7 @@ const Consequences: React.FC = () => {
                             setGameCode(responseData.game_id)
                             setPlayerName(responseData.player_name)
                             setGameState(GameState.LOBBY_JOINED)
+                            createSessionId();
                         }
                     })
                     .catch(e => {
@@ -153,7 +176,7 @@ const Consequences: React.FC = () => {
     useEffect(() => {
         const interval = setInterval(() => {
             if (POLL_GAME_STATES.includes(gameState)) {
-                ConsequencesService.pollGame(new RequestBuilder().playerName(playerName).game_id(gameCode).build())
+                ConsequencesService.pollGame(new RequestBuilder().playerName(playerName).game_id(gameCode).session_id(sessionId).game_state(gameState).build())
                     .then(response => {
                         console.log(response)
                         let responseData = response.data as unknown as Response
@@ -183,6 +206,13 @@ const Consequences: React.FC = () => {
                         if (gameState == GameState.STORY_DISPLAY && responseData.game_state == '<not started>') {
                             setGameState(GameState.LOBBY_JOINED)
                         }
+                        // reinstate from session
+                        if (responseData.player_name && responseData.game_id && responseData.game_state) {
+                            setPlayerName(responseData.player_name)
+                            setGameCode(responseData.game_id)
+                            setGameState(parseInt(responseData.game_state))
+
+                        }
                     })
                     .catch(e => {
                         setGameCode("Unable to join.")
@@ -191,7 +221,7 @@ const Consequences: React.FC = () => {
             }
         }, POLL_INTERVAL);
         return () => clearInterval(interval);
-    }, [gameState, gameCode, playerName]);
+    }, [gameState, gameCode, playerName, sessionId]);
 
     function getUserWaitingList() {
         let personList: JSX.Element[] = []
@@ -255,7 +285,6 @@ const Consequences: React.FC = () => {
                     updateEntry={updateEntry}
                     handleSubmit={handleSubmit}/>
             case GameState.STORY_DISPLAY:
-                console.log(playerName)
                 return <div className="form-group custom">
                     {completeEntries.map((entry: Entry, index: number) =>
                         <Collapsible key={index} easing={"ease-in"} trigger={entry.state}>
@@ -266,6 +295,10 @@ const Consequences: React.FC = () => {
                         <button className="btn btn-primary separated" onClick={handlePlayAgain}>Play
                             again</button> : <></>
                     }
+                </div>
+            case GameState.FETCHING:
+                return <div className="form-group custom">
+                    <label className="label other">Fetching</label><br/>
                 </div>
         }
     }

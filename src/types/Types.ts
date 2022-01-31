@@ -15,5 +15,6 @@ export enum GameState {
     READY_TO_START,
     IN_PROGRESS,
     STORY_DISPLAY,
-    PLAY_AGAIN
+    PLAY_AGAIN,
+    FETCHING
 }
