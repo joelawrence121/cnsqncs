@@ -5,7 +5,8 @@ from fastapi import FastAPI
 from starlette.middleware.cors import CORSMiddleware
 
 from consequences_service import ConsequencesService
-from server.client_json import CreateRequest, JoinRequest, PollRequest, EntryRequest, ClearRequest
+from server.client_json import CreateRequest, JoinRequest, PollRequest, EntryRequest, ClearRequest, RestartRequest, \
+    StartRequest
 
 app = FastAPI()
 consequences_service = ConsequencesService()
@@ -47,13 +48,13 @@ async def join_game(request: JoinRequest):
 @app.post("/poll")
 async def poll_game(request: PollRequest):
     try:
-        return consequences_service.poll_game(request.name, request.game_id)
+        return consequences_service.poll_game(request.name, request.game_id, request.session_id, request.game_state)
     except RuntimeError as e:
         logger.warning(e)
 
 
 @app.post("/start")
-async def start_game(request: PollRequest):
+async def start_game(request: StartRequest):
     try:
         return consequences_service.start_game(request.game_id)
     except RuntimeError as e:
@@ -64,6 +65,14 @@ async def start_game(request: PollRequest):
 async def post_entry(request: EntryRequest):
     try:
         return consequences_service.post_entry(request)
+    except RuntimeError as e:
+        logger.warning(e)
+
+
+@app.post("/restart")
+async def restart(request: RestartRequest):
+    try:
+        return consequences_service.restart_game(request.game_id)
     except RuntimeError as e:
         logger.warning(e)
 

@@ -12,7 +12,6 @@ const createGame = (request: Request) => {
 };
 
 const joinGame = (request: Request) => {
-    console.log(request)
     return http.post("/join", request, headers)
 }
 
@@ -32,6 +31,9 @@ const getActiveGames = (request: ClearRequest) => {
     return http.post("/clear", request, headers)
 }
 
+const restartGame = (request: Request) => {
+    return http.post("/restart", request, headers)
+}
 
 const ConsequencesService = {
     createGame,
@@ -39,7 +41,8 @@ const ConsequencesService = {
     pollGame,
     startGame,
     postEntry,
-    getActiveGames
+    getActiveGames,
+    restartGame
 }
 
 export default ConsequencesService;

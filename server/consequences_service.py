@@ -1,10 +1,11 @@
 from server.client_json import EntryRequest
-from server.domain import Game, GameState
+from server.domain import Game, GameState, Session
 
 
 class ConsequencesService:
     def __init__(self):
         self.games = {}
+        self.sessions = {}
 
     def __get_response_obj(self, game: Game):
         return {
@@ -12,7 +13,8 @@ class ConsequencesService:
             'game_state': game.game_state.value,
             'story_state': game.story_state.value,
             'waiting_for': game.get_waiting_for(),
-            'players': game.get_players()
+            'players': game.get_players(),
+            'host_player': game.host_player
         }
 
     def create_game(self, player_name, avatar, mode):
@@ -28,8 +30,10 @@ class ConsequencesService:
     def join_game(self, game_id, player_name, avatar):
         if game_id not in self.games.keys():
             return {'message': 'game_id: ' + game_id + ' does not exist.'}
-        if player_name in self.games[game_id].players:
-            return {'message': player_name + ' already taken.'}
+        # deal with same names
+        if player_name in [player.name for player in self.games[game_id].players]:
+            player_name += " (" + str(
+                len([player.name for player in self.games[game_id].players if player_name in player.name])) + ")"
         if len(player_name) < 1:
             player_name = "Player " + str((len(self.games[game_id].players)) + 1)
 
@@ -38,10 +42,22 @@ class ConsequencesService:
         response_ob['player_name'] = player_name
         return response_ob
 
-    def poll_game(self, player_name, game_id):
+    def poll_game(self, player_name, game_id, session_id, game_state):
+        # if no player_name, game_id provided return session details for restate
+        if len(player_name) == 0 or len(game_id) == 0 is None:
+            if session_id is None or session_id not in self.sessions.keys():
+                return {'message': 'session_id is not recognised.'}
+            session = self.sessions[session_id]
+            return {'game_id': session.game_id, 'player_name': session.name, 'game_state': session.game_state}
+
         if game_id not in self.games.keys():
             return {'message': 'game_id: ' + game_id + ' does not exist.'}
 
+        # if session doesn't exist already and game id provided, create
+        if session_id not in self.sessions.keys():
+            self.sessions[session_id] = Session(player_name, game_id, game_state)
+
+        self.sessions[session_id].game_state = game_state
         game_obj = self.__get_response_obj(self.games[game_id])
         game_obj['story'] = self.games[game_id].poll_game(player_name)
         return game_obj
@@ -62,10 +78,18 @@ class ConsequencesService:
         self.games[request.game_id].post_entry(request.name, request.entry)
         return self.__get_response_obj(self.games[request.game_id])
 
+    def restart_game(self, game_id):
+        if game_id not in self.games.keys():
+            return {'message': 'game_id: ' + game_id + ' does not exist.'}
+
+        self.games[game_id].restart()
+        return self.__get_response_obj(self.games[game_id])
+
     def clear_games(self, confirm: bool):
         if confirm:
             return_obj = {"cleared": len(self.games)}
             self.games = {}
+            self.sessions = {}
         else:
             return_obj = {"games": []}
             for game_id in self.games:
