@@ -2,7 +2,7 @@
 A fun party game for the later hours of the night, now pen-less. 
 Mobile friendly.
 
-Try it out **[here](https://childhood-font-passion-emotional.trycloudflare.com/)** <<
+Try it out here **[topconsequences.com](topconsequences.com)** <<
 
 ### Choose your game mode!
 ![image](https://user-images.githubusercontent.com/32837058/149635795-ef64c2be-39b9-4deb-a97a-f0d20d11404b.png)
