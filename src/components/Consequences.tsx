@@ -17,9 +17,11 @@ images.map(value => IMAGE_MAP.set(value.toUpperCase(), value))
 const Consequences: React.FC = () => {
 
     const POLL_INTERVAL = 500
+    const MOBILE_WIDTH = 400
     const history = useHistory();
     const location = useLocation();
     const POLL_GAME_STATES = [GameState.LOBBY_CREATED, GameState.LOBBY_JOINED, GameState.IN_PROGRESS, GameState.STORY_DISPLAY, GameState.FETCHING]
+    const [innerWidth] = useState(window.innerWidth)
 
     const [sessionId, setSessionId] = useState<string>();
     const [gameState, setGameState] = useState<GameState>(GameState.HOME)
@@ -232,7 +234,7 @@ const Consequences: React.FC = () => {
         players.forEach((value, key, map) => {
             if (key !== playerName) {
                 personList.push(
-                    <div className="waiting-avatar lobby">
+                    <div className="waiting-avatar">
                         <label className="label success">{key}</label>
                         <img className="avatar waiting" src={IMAGE_MAP.get(value)}/>
                         <br/>
@@ -259,7 +261,7 @@ const Consequences: React.FC = () => {
             case GameState.JOIN:
             case GameState.JOIN_GAME:
                 return <div className="form-group custom">
-                    <img className="avatar" src={IMAGE_MAP.get(avatar)}/><br/>
+                    <img className={innerWidth > MOBILE_WIDTH ? "avatar" : "avatar_mobile"} src={IMAGE_MAP.get(avatar)}/><br/>
                     <input type="text" className="form-control separated" placeholder="Game code" value={gameCode}
                            onChange={updateGameCode}/>
                     <button className="btn btn-primary separated" onClick={handleJoin}>Join</button>
@@ -267,20 +269,20 @@ const Consequences: React.FC = () => {
             case GameState.LOBBY_CREATED:
                 let personList = getUserWaitingList()
                 return <div className="form-group custom">
-                    <img className="avatar" src={IMAGE_MAP.get(avatar)}/><br/>
+                    <img className={innerWidth > MOBILE_WIDTH ? "avatar" : "avatar_mobile"} src={IMAGE_MAP.get(avatar)}/><br/>
                     <label className="label other">{gameCode}</label>
                     {personList.length > 0 ?
                         <button className="btn btn-primary separated" onClick={handleStart}>Start</button> : <></>
                     }
                     <br/>
-                    {personList}
+                    <div className="waiting-div">{personList}</div>
                 </div>
             case GameState.LOBBY_JOINED:
                 return <div className="form-group custom">
-                    <img className="avatar" src={IMAGE_MAP.get(avatar)}/>
+                    <img className={innerWidth > MOBILE_WIDTH ? "avatar" : "avatar_mobile"} src={IMAGE_MAP.get(avatar)}/>
                     <label className="label other">{gameCode}</label>
                     <label className="label other">Waiting</label><br/>
-                    {getUserWaitingList()}
+                    <div className="waiting-div">{getUserWaitingList()}</div>
                 </div>
             case GameState.IN_PROGRESS:
                 return <StorySubmission

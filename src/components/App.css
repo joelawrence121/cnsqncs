@@ -53,6 +53,7 @@ body {
 
 .warning {
     background-color: #ff9800;
+    border-radius: 10px;
     opacity: 50% !important;
 }
 
@@ -68,7 +69,8 @@ body {
 
 .title {
     text-decoration: underline;
-    user-select: none
+    user-select: none;
+    color: black
 }
 
 .custom {
@@ -86,21 +88,38 @@ img.avatar {
     box-shadow: 0 0 5px 5px rgb(255, 255, 255);
 }
 
+img.avatar_mobile {
+    margin: auto;
+    width: 30%;
+    height: 30%;
+    border-radius: 50%;
+    box-shadow: 0 0 5px 5px rgb(255, 255, 255);
+}
+
 img.avatar.waiting {
-    width: 7%;
-    opacity: 60% !important;
+    width: 10%;
+    opacity: 80% !important;
 }
 
 .waiting-div {
-    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+    align-self: center;
+    width: 75%;
+}
+
+.waiting_label {
+    color: white;
+    padding: 8px;
+    width: 75%;
 }
 
 .waiting-avatar {
     display: flex;
-    flex-direction: column;
-    align-items: center;
-    width: 100%;
-    overflow: hidden;
+    flex-direction: row;
+    align-items: stretch;
+    align-self: center;
 }
 
 .lobby {
@@ -116,6 +135,18 @@ img.avatar.selectable:hover {
 }
 
 img.avatar.selected {
+    box-shadow: 0 0 5px 3px rgb(0, 0, 0);
+}
+
+img.avatar_mobile.selectable {
+    transition: box-shadow 1s ease
+}
+
+img.avatar_mobile.selectable:hover {
+    box-shadow: 0 0 5px 3px rgb(0, 0, 0);
+}
+
+img.avatar_mobile.selected {
     box-shadow: 0 0 5px 3px rgb(0, 0, 0);
 }
 

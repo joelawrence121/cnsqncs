@@ -12,13 +12,16 @@ interface HomeScreenProps {
 
 function HomeScreen(props: HomeScreenProps) {
 
+    const MOBILE_WIDTH = 400
     const [imageList] = useState(getRandomSubarray(images, 12))
+    const [innerWidth] = useState(window.innerWidth)
 
-    function getImage(value: any) {
+    function getImage(value: any, isMobile: boolean) {
+        let avatarClass = isMobile ? 'avatar_mobile' : 'avatar'
         if (props.avatar === value.toUpperCase()) {
-            return <img className="avatar selected fadein" src={value} onClick={() => props.setAvatar(value.toUpperCase())}/>
+            return <img className={avatarClass + " selected fadein"}  src={value} onClick={() => props.setAvatar(value.toUpperCase())}/>
         }
-        return <img className="avatar selectable fadein" src={value} onClick={() => props.setAvatar(value.toUpperCase())}/>
+        return <img className={avatarClass + " selectable fadein"} src={value} onClick={() => props.setAvatar(value.toUpperCase())}/>
     }
 
     function getRandomSubarray(array: any[], size: number) {
@@ -32,14 +35,22 @@ function HomeScreen(props: HomeScreenProps) {
         return shuffled.slice(min);
     }
 
+    function getAvatarRows(innerWidth : number) {
+        const isMobile = innerWidth <= MOBILE_WIDTH
+        const perRow = isMobile ? 3 : 4
+        return <>
+            <div className="avatars">{imageList.slice(0, perRow).map(value => getImage(value, isMobile))}</div>
+            <br/>
+            <div className="avatars">{imageList.slice(perRow, perRow * 2).map(value => getImage(value, isMobile))}</div>
+            <br/>
+            <div className="avatars">{imageList.slice(perRow * 2, perRow * 3).map(value => getImage(value, isMobile))}</div>
+            <br/>
+        </>
+    }
+
     return (
         <div className="form-group custom">
-            <div className="avatars">{imageList.slice(0, 4).map(value => getImage(value))}</div>
-            <br/>
-            <div className="avatars">{imageList.slice(4, 8).map(value => getImage(value))}</div>
-            <br/>
-            <div className="avatars">{imageList.slice(8, 12).map(value => getImage(value))}</div>
-            <br/>
+            {getAvatarRows(innerWidth)}
             <input type="text" className="form-control separated" placeholder="Name"
                    value={props.playerName}
                    onChange={props.updatePlayerName}

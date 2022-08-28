@@ -17,7 +17,9 @@ let buttonStyles = new Map<GameMode, string>([
 
 function CreateGame(props: CreateGameProps) {
 
-    const[selectedMode, setSelectedMode] = useState(GameMode.CLASSIC)
+    const MOBILE_WIDTH = 400
+    const [selectedMode, setSelectedMode] = useState(GameMode.CLASSIC)
+    const [innerWidth] = useState(window.innerWidth)
 
     function getButtonStyle(gameMode: GameMode) {
         if (gameMode == selectedMode) {
@@ -28,7 +30,7 @@ function CreateGame(props: CreateGameProps) {
 
     return (
         <div className="form-group custom">
-            <img className="avatar" src={props.imageMap.get(props.avatar)}/>
+            <img className={innerWidth > MOBILE_WIDTH ? "avatar" : "avatar_mobile"} src={props.imageMap.get(props.avatar)}/>
             <label className="label title">{props.playerName}</label><br/>
             <div className="row">
                 <div className="col-sm-4">
