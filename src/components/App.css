@@ -22,6 +22,12 @@ body {
     background-color: transparent;
 }
 
+.section.about {
+    min-height: 100vh;
+    background-color: transparent;
+    padding: 5%;
+}
+
 .bold {
     font-weight: bold;
 }
@@ -47,7 +53,7 @@ body {
 
 .warning {
     background-color: #ff9800;
-    opacity: 50%;
+    opacity: 50% !important;
 }
 
 .danger {
@@ -82,7 +88,7 @@ img.avatar {
 
 img.avatar.waiting {
     width: 7%;
-    opacity: 60%;
+    opacity: 60% !important;
 }
 
 .waiting-div {
@@ -201,6 +207,20 @@ img.avatar.selected {
 
 .Collapsible:nth-child(even) {
     background: rgba(255, 255, 255, 0.96);
+}
+
+.links-container {
+    padding: 25px 50px;
+}
+
+a.link {
+    margin: 0 1rem;
+    transition: transform 250ms;
+    display: inline-block;
+}
+
+a.link:hover {
+    transform: translateY(-2px);
 }
 
 /* Animation keyframes */
