@@ -54,7 +54,6 @@ body {
 .warning {
     background-color: #ff9800;
     border-radius: 10px;
-    opacity: 50% !important;
 }
 
 .danger {
@@ -98,7 +97,6 @@ img.avatar_mobile {
 
 img.avatar.waiting {
     width: 10%;
-    opacity: 80% !important;
 }
 
 .waiting-div {

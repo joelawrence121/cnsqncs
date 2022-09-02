@@ -16,7 +16,7 @@ images.map(value => IMAGE_MAP.set(value.toUpperCase(), value))
 
 const Consequences: React.FC = () => {
 
-    const POLL_INTERVAL = 500
+    const POLL_INTERVAL = 1500
     const MOBILE_WIDTH = 400
     const history = useHistory();
     const location = useLocation();
